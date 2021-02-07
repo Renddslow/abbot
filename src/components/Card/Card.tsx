@@ -75,11 +75,11 @@ const Card = ({ leader, participant, relationshipType, to }: Props) => {
         {
           !!leader &&
           <Avatar>
-            <img src={leader.data.attributes.avatar} />
+            <img src={leader.data.attributes.avatar} alt={`${leader.data.attributes.firstName}'s avatar`} />
           </Avatar>
         }
         <Avatar>
-          <img src={participant.data.attributes.avatar} />
+          <img src={participant.data.attributes.avatar} alt={`${participant.data.attributes.firstName}'s avatar`} />
         </Avatar>
       </CardHeader>
       {
