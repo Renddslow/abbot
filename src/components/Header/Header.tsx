@@ -66,6 +66,13 @@ const NavButton = styled(Link)`
   }
 `;
 
+const NavButtonContainer = styled.div`
+  display: block;
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
+`;
+
 const HeaderComponent = () => (
   <Header>
     <Navigation>
@@ -75,11 +82,11 @@ const HeaderComponent = () => (
         </Logo>
         <h1>relationships</h1>
       </LogoContainer>
-      <div>
+      <NavButtonContainer>
         <NavButton activeClassName="active" to="/requests">Requests</NavButton>
         <NavButton activeClassName="active" to="/relationships">Relationships</NavButton>
         <NavButton activeClassName="active" to="/people">People</NavButton>
-      </div>
+      </NavButtonContainer>
     </Navigation>
   </Header>
 );

@@ -3,8 +3,8 @@ import catchify from 'catchify';
 
 import { AuthContext } from '../Auth';
 
-type Route = {
-  route: string,
+export type Route = {
+  route: string | ((props: any) => void);
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   body?: Record<string, any>,
 };
@@ -35,14 +35,16 @@ const withAPI = (Component: (props: any) => JSX.Element, route: Route) => (props
       opts.body = route.body;
     }
 
-    catchify(fetch(`https://abbot-api-auevpolm5q-uc.a.run.app/${route.route}`, opts).then((d) => d.json()))
+    const routeUrl = typeof route.route === 'function' ? route.route(props) : route.route;
+
+    catchify(fetch(`https://abbot-api-auevpolm5q-uc.a.run.app/${routeUrl}`, opts).then((d) => d.json()))
       .then(([err, res]: [any | null, any | null]) => {
         setData(res);
         setLoading(false);
       });
 
     return () => controller.abort();
-  }, [user.token]);
+  }, [user.token, props]);
 
   return (<Component {...props} data={data} loading={loading} />);
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 
 import AuthProvider from './Auth';
 
@@ -8,26 +8,40 @@ import Relationships from './pages/Relationships';
 
 import Header from './components/Header';
 import Requests from './pages/Requests/Requests';
+import Request from './pages/Request/Request';
 
 function App() {
+  const location = useLocation();
+  // @ts-ignore
+  const background = location.state && location.state.background;
+
   return (
-    <Router>
-      <AuthProvider>
-        {(loggedIn) => (
-          loggedIn ?
+    <AuthProvider>
+      {(loggedIn) =>
+        loggedIn ? (
           <div className="App">
             <Header />
-            <Switch>
+            <Switch location={background || location}>
               <Route path="/relationships/:id" component={() => <div />} />
-              <Route path="/relationships" component={Relationships} />
+              <Route exact path="/relationships" component={Relationships} />
 
-              <Route path="/requests" component={Requests} />
+              {
+                /* TODO:
+                  - Request modals
+                    - Assignment
+                    - Todo items
+                 */
+              }
+              <Route exact path="/requests" component={Requests} />
+              <Route path="/*" component={() => <Redirect to="/requests" />} />
             </Switch>
-          </div> :
+            { background && <Route path="/requests/:id" component={Request} /> }
+          </div>
+        ) : (
           <Login />
-        )}
-      </AuthProvider>
-    </Router>
+        )
+      }
+    </AuthProvider>
   );
 }
 

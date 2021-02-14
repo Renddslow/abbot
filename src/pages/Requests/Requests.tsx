@@ -1,5 +1,6 @@
 import React from 'react';
 import Spinner from '@atlaskit/spinner';
+import { RouteComponentProps } from 'react-router';
 
 import Subheader from '../../components/Subheader';
 import withAPI from '../../utils/withAPI';
@@ -7,38 +8,15 @@ import Section from '../../components/Section';
 import Card from '../../components/Card';
 import PageHeader from '../PageHeader';
 import Grid from '../Grid';
+import { RequestType } from '../../types';
 
 type Data = {
-  data: Array<{
-    type: 'request';
-    id: string;
-    attributes: {
-      assignment: {
-        to: string | null;
-        status: 'unassigned' | 'rejected' | 'pending';
-      };
-      created: string;
-      relationshipType: 'coaching' | 'mentoring';
-    };
-    relationships: {
-      individual: {
-        data: {
-          id: string;
-          type: 'person';
-          attributes: {
-            avatar: string;
-            firstName: string;
-            lastName: string;
-            name: string;
-            email: string;
-          };
-        }
-      }
-    }
-  }>;
+  data: Array<RequestType>;
 };
 
-type Props = {
+type Props = RouteComponentProps<{
+  id: string;
+}> & {
   data: Data; // TODO: type this
   loading: boolean;
 };
@@ -58,6 +36,7 @@ const Requests = ({ data, loading }: Props) => {
             <Grid>
               {data.data.map((rel) => (
                 <Card
+                  key={rel.id}
                   participant={rel.relationships.individual}
                   relationshipType={rel.attributes.relationshipType}
                   to={`/requests/${rel.id}`}

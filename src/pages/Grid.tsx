@@ -5,6 +5,7 @@ const Grid = styled.div`
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 20px;
   margin-top: 24px;
+  width: 100%;
   
   @media screen and (max-width: 1024px) {
     grid-template-columns: repeat(4, 1fr);
@@ -16,6 +17,7 @@ const Grid = styled.div`
   
   @media screen and (max-width: 500px) {
     grid-template-columns: repeat(2, 1fr);
+    grid-gap: 14px;
   }
 `;
 

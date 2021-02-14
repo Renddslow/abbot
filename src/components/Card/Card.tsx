@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import {Link} from 'react-router-dom';
+import {Link, useLocation} from 'react-router-dom';
+
+import Tag from '../Tag';
 
 type Props = {
   leader?: any;
@@ -17,6 +19,10 @@ const CardStyled = styled(Link)`
   width: 100%;
   text-decoration: none;
   z-index: 200;
+  
+  @media screen and (max-width: 540px) {
+    padding: 14px;
+  }
 `;
 
 const CardHeader = styled.div`
@@ -54,23 +60,13 @@ const Text = styled.p`
   color: black;
 `;
 
-const Tag = styled.div<{ relationshipType: 'mentoring' | 'coaching' }>`
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 8px;
-  box-sizing: border-box;
-  color: #fff;
-  background: ${props => props.relationshipType === 'mentoring' ? '#2d9d42' : '#f9ae05'};
-  width: max-content;
-  border-radius: 8px;
-  margin-top: 8px;
-`;
-
-const upper = (p: string) => `${p[0].toUpperCase()}${p.slice(1)}`;
-
 const Card = ({ leader, participant, relationshipType, to }: Props) => {
+  const location = useLocation();
   return (
-    <CardStyled to={to}>
+    <CardStyled to={{
+      pathname: to,
+      state: { background: location },
+    }}>
       <CardHeader>
         {
           !!leader &&
@@ -86,7 +82,7 @@ const Card = ({ leader, participant, relationshipType, to }: Props) => {
         !!leader && <Text>{leader.data.attributes.firstName} {leader.data.attributes.lastName} &amp;</Text>
       }
       <Text>{participant.data.attributes.firstName} {participant.data.attributes.lastName}</Text>
-      <Tag relationshipType={relationshipType}>{upper(relationshipType)}</Tag>
+      <Tag>{relationshipType}</Tag>
     </CardStyled>
   );
 }
