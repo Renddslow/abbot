@@ -141,6 +141,7 @@ const CardSection = styled.section`
   grid-template-columns: minmax(0, 1fr);
   width: 100%;
   grid-gap: 24px;
+  padding-bottom: 12px;
 `;
 
 const Link = styled(Action).attrs({

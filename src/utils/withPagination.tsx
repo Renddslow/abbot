@@ -7,14 +7,14 @@ import {AuthContext} from '../Auth';
 
 const withPagination = (Component: (props: any) => JSX.Element, route: Route) => (props: any) => {
   const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
 
-  if (!user) {
-    throw new Error();
-  }
-
   useEffect(() => {
+    if (!user) {
+      throw new Error();
+    }
+
     const controller = new AbortController();
     const signal = controller.signal;
 
@@ -34,9 +34,7 @@ const withPagination = (Component: (props: any) => JSX.Element, route: Route) =>
       opts.body = route.body;
     }
 
-    console.log(route)
     const routeUrl = typeof route.route === 'function' ? route.route(props) : route.route;
-    console.log(routeUrl)
 
     catchify(
       fetch(`https://abbot-api-auevpolm5q-uc.a.run.app/${routeUrl}?offset=${offset}`, opts).then((d) => d.json()),
@@ -44,9 +42,8 @@ const withPagination = (Component: (props: any) => JSX.Element, route: Route) =>
       setData(res);
       setLoading(false);
     });
-  }, []);
+  }, [user, props]);
 
-  console.log(data, loading)
   return <Component {...props} loading={loading} data={data} />;
 };
 

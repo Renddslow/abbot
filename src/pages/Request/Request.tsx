@@ -8,7 +8,8 @@ import withAPI from '../../utils/withAPI';
 import { RequestType } from '../../types';
 import Tag from '../../components/Tag';
 import { TagRaw } from '../../components/Tag/Tag';
-import Button from '../../components/Button/Button';
+import Button from '../../components/Button';
+import AssignmentCard from '../../components/AssignmentCard';
 import MentorsTray from './MentorsTray';
 
 type Props = {
@@ -33,18 +34,6 @@ const Row = styled.div`
 const Datetime = styled.time`
   font-size: 12px;
   font-weight: 600;
-`;
-
-const AssignmentCard = styled.div`
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  padding: 12px;
-  display: grid;
-  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
-  grid-gap: 12px;
-  align-items: center;
-  margin-top: 8px;
 `;
 
 const UnassignedCircle = styled.div`
@@ -77,27 +66,22 @@ const ListItem = styled.li<{ completed?: boolean }>`
   position: relative;
   z-index: 0;
 
-  &::marker {
-    content: ${(props) => (props.completed ? '"✓  "' : '""')};
-    z-index: 3;
-    color: #fff;
-    font-size: 13px;
-    line-height: -1;
-    font-weight: 800;
-  }
-
   &::before {
-    content: '';
+    content: ${(props) => (props.completed ? '"✓"' : '""')};
     width: 12px;
     height: 12px;
     border: 2px solid ${(props) => (props.completed ? '#36B37E' : '#ccc')};
-    display: block;
+    display: flex;
     border-radius: 50%;
     position: absolute;
     left: -22px;
     top: 3px;
     background: ${(props) => (props.completed ? '#36B37E' : '#fff')};
     z-index: -1;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-weight: 600;
   }
 
   &:not(:last-child)::after {
@@ -131,6 +115,8 @@ const Request = ({ data, loading }: Props) => {
     : '';
   const relationshipType = get(data, 'data.attributes.relationshipType', 'mentoring');
 
+  const assignment = get(data, 'data.attributes.assignment', {} as { [key: string]: any });
+
   return (
     <Modal
       title={`${firstName} ${lastName}`}
@@ -139,8 +125,8 @@ const Request = ({ data, loading }: Props) => {
         <>
           <h2>Next Steps</h2>
           <List>
-            <ListItem completed>Assign person to mentor/coach</ListItem>
-            <ListItem>Await acceptance of assignment</ListItem>
+            <ListItem completed={assignment.status !== 'unassigned'}>Assign person to mentor/coach</ListItem>
+            <ListItem completed={assignment.status === 'accepted'}>Await acceptance of assignment</ListItem>
             <ListItem>Confirm accepted assignment and create relationship</ListItem>
           </List>
         </>
@@ -165,22 +151,34 @@ const Request = ({ data, loading }: Props) => {
           </Datetime>
         </Row>
       )}
-      renderTray={() => showTray && <MentorsTray relationshipType={relationshipType} />}
+      renderTray={() => showTray && (
+        <MentorsTray
+          relationshipType={relationshipType}
+          requestId={data.data.id}
+          onExit={() => {
+            setShowTray(false);
+          }}
+        />
+      )}
       onExit={() => history.goBack()}
     >
       <div>
         <h2>Assignment</h2>
-        <AssignmentCard>
-          <UnassignedCircle>?</UnassignedCircle>
-          <Column>
-            <h3>Unassigned</h3>
-            {!showTray && (
-              <Button background="#0052CC" onClick={() => setShowTray(true)}>
-                Find {relationshipType === 'mentoring' ? 'Mentor' : 'Coach'}
-              </Button>
-            )}
-          </Column>
-        </AssignmentCard>
+        {
+          assignment.status === 'unassigned' ?
+            <AssignmentCard>
+              <UnassignedCircle>?</UnassignedCircle>
+              <Column>
+                <h3>Unassigned</h3>
+                {!showTray && (
+                  <Button background="#0052CC" onClick={() => setShowTray(true)}>
+                    Find {relationshipType === 'mentoring' ? 'Mentor' : 'Coach'}
+                  </Button>
+                )}
+              </Column>
+            </AssignmentCard> :
+            <AssignmentCard />
+        }
       </div>
     </Modal>
   );
