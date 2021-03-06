@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import qs from 'qs';
 
-type User = {
+export type User = {
   email: string;
   name: string;
   id: string;

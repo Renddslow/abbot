@@ -6,7 +6,7 @@ export const TagRaw = styled.div<{ relationshipType: 'mentoring' | 'coaching' }>
   padding: 4px 8px;
   box-sizing: border-box;
   color: #fff;
-  background: ${props => props.relationshipType === 'mentoring' ? '#2d9d42' : '#f9ae05'};
+  background: ${props => props.relationshipType === 'mentoring' ? '#996fc7' : '#c74974'};
   width: max-content;
   border-radius: 8px;
   margin-top: 8px;
