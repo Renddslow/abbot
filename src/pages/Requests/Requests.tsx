@@ -3,7 +3,7 @@ import Spinner from '@atlaskit/spinner';
 import { RouteComponentProps } from 'react-router';
 
 import Subheader from '../../components/Subheader';
-import withAPI from '../../utils/withAPI';
+import api from '../../utils/api';
 import Section from '../../components/Section';
 import Card from '../../components/Card';
 import PageHeader from '../PageHeader';
@@ -50,7 +50,7 @@ const Requests = ({ data, loading }: Props) => {
   );
 };
 
-export default withAPI(Requests, {
+export default api(Requests, {
   route: 'requests',
   method: 'GET',
 });

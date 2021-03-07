@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from 'react';
 import catchify from 'catchify';
 import qs from 'qs';
 
-import { Route } from './withAPI';
+import { Route } from './api';
 import {AuthContext} from '../Auth';
 
 const withPagination = (Component: (props: any) => JSX.Element, route: Route) => (props: any) => {

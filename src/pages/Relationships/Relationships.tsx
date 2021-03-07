@@ -2,7 +2,7 @@ import React from 'react';
 import Spinner from '@atlaskit/spinner';
 
 import Subheader from '../../components/Subheader';
-import withAPI from '../../utils/withAPI';
+import api from '../../utils/api';
 import Section from '../../components/Section';
 import Card from '../../components/Card';
 import PageHeader from '../PageHeader';
@@ -71,7 +71,7 @@ const Relationships = ({ data, loading }: Props) => {
   );
 };
 
-export default withAPI(Relationships, {
+export default api(Relationships, {
   route: 'relationships',
   method: 'GET',
 });

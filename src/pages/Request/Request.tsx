@@ -4,13 +4,12 @@ import { get } from 'dot-prop';
 import styled from 'styled-components';
 
 import Modal from '../../components/Modal';
-import withAPI from '../../utils/withAPI';
+import api from '../../utils/api';
 import { RequestType } from '../../types';
 import Tag from '../../components/Tag';
 import { TagRaw } from '../../components/Tag/Tag';
-import Button from '../../components/Button';
-import AssignmentCard from '../../components/AssignmentCard';
 import MentorsTray from './MentorsTray';
+import Assignment from './Assignment';
 
 type Props = {
   data: {
@@ -34,25 +33,6 @@ const Row = styled.div`
 const Datetime = styled.time`
   font-size: 12px;
   font-weight: 600;
-`;
-
-const UnassignedCircle = styled.div`
-  background: #545454;
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  width: 50px;
-  height: 50px;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 20px;
-`;
-
-const Column = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-gap: 8px;
 `;
 
 const List = styled.ul`
@@ -164,27 +144,13 @@ const Request = ({ data, loading }: Props) => {
     >
       <div>
         <h2>Assignment</h2>
-        {
-          assignment.status === 'unassigned' ?
-            <AssignmentCard>
-              <UnassignedCircle>?</UnassignedCircle>
-              <Column>
-                <h3>Unassigned</h3>
-                {!showTray && (
-                  <Button background="#0052CC" onClick={() => setShowTray(true)}>
-                    Find {relationshipType === 'mentoring' ? 'Mentor' : 'Coach'}
-                  </Button>
-                )}
-              </Column>
-            </AssignmentCard> :
-            <AssignmentCard />
-        }
+        <Assignment assignment={assignment} relationshipType={relationshipType} showTray={showTray} onClick={() => setShowTray(true)} />
       </div>
     </Modal>
   );
 };
 
-export default withAPI(Request, {
+export default api(Request, {
   route: ({ match }) => `requests/${match.params.id}`,
   method: 'GET',
 });
