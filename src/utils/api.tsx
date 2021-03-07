@@ -9,7 +9,7 @@ export type Route = {
   body?: Record<string, any>;
 };
 
-const get = (route: string, opts: Record<string, any>, user: User, signal: any) => {
+export const get = (route: string, opts: Record<string, any>, user: User, signal: any) => {
   const options = {
     ...opts,
     method: 'GET',

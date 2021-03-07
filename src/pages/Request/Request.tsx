@@ -105,8 +105,12 @@ const Request = ({ data, loading }: Props) => {
         <>
           <h2>Next Steps</h2>
           <List>
-            <ListItem completed={assignment.status !== 'unassigned'}>Assign person to mentor/coach</ListItem>
-            <ListItem completed={assignment.status === 'accepted'}>Await acceptance of assignment</ListItem>
+            <ListItem completed={assignment.status !== 'unassigned'}>
+              Assign person to mentor/coach
+            </ListItem>
+            <ListItem completed={assignment.status === 'accepted'}>
+              Await acceptance of assignment
+            </ListItem>
             <ListItem>Confirm accepted assignment and create relationship</ListItem>
           </List>
         </>
@@ -131,20 +135,28 @@ const Request = ({ data, loading }: Props) => {
           </Datetime>
         </Row>
       )}
-      renderTray={() => showTray && (
-        <MentorsTray
-          relationshipType={relationshipType}
-          requestId={data.data.id}
-          onExit={() => {
-            setShowTray(false);
-          }}
-        />
-      )}
+      renderTray={() =>
+        showTray && (
+          <MentorsTray
+            relationshipType={relationshipType}
+            requestId={data.data.id}
+            onExit={() => {
+              setShowTray(false);
+            }}
+          />
+        )
+      }
       onExit={() => history.goBack()}
     >
       <div>
         <h2>Assignment</h2>
-        <Assignment assignment={assignment} relationshipType={relationshipType} showTray={showTray} onClick={() => setShowTray(true)} />
+        <Assignment
+          id={assignment.to}
+          assignment={assignment}
+          relationshipType={relationshipType}
+          showTray={showTray}
+          onClick={() => setShowTray(true)}
+        />
       </div>
     </Modal>
   );

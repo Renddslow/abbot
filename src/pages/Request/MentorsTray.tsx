@@ -102,7 +102,7 @@ const MentorsTray = (props: Props) => {
               props.data.data.map((person) => (
                 <AssignmentCard>
                   <Image>
-                    <img src={person.attributes.avatar} />
+                    <img src={person.attributes.avatar} alt={`Avatar of ${person.attributes.name}`} />
                   </Image>
                   <Column>
                     <h2>{person.attributes.name}</h2>

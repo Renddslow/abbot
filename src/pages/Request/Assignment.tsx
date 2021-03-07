@@ -1,11 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import styled from 'styled-components';
+import Loading from '@atlaskit/spinner';
+import dotProp from 'dot-prop';
 
 import Button from '../../components/Button';
 import AssignmentCard from '../../components/AssignmentCard';
+import {get} from '../../utils/api';
+import {AuthContext} from '../../Auth';
+import { Person } from '../../types';
 
 type Props = {
   assignment: any;
+  id: string;
   relationshipType: 'mentoring' | 'coaching';
   showTray: boolean;
   onClick: () => void;
@@ -31,6 +37,20 @@ const Circle = styled.div`
   height: 50px;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+  }
 `;
 
 const Column = styled.div`
@@ -47,12 +67,29 @@ const Row = styled.div`
   justify-content: start;
 `;
 
-const Assignment = ({ showTray, onClick, relationshipType, assignment }: Props) => {
-  const [person, setPerson] = useState({});
+const Assignment = ({ showTray, onClick, relationshipType, assignment, id }: Props) => {
+  const [person, setPerson] = useState<Partial<Person>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useContext(AuthContext);
+
+  if (!user) {
+    throw new Error();
+  }
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
 
-  });
+    if (id) {
+      get(`people/${id}`, {}, user, signal)
+        .then(([err, person]: [any | null, any | null]) => {
+          setIsLoading(false);
+          setPerson(person.data);
+        });
+    }
+
+    return () => controller.abort();
+  }, [user, id]);
 
   return (
     assignment.status === 'unassigned' ?
@@ -68,24 +105,32 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment }: Props) 
       </Column>
     </AssignmentCard> :
     <AssignmentCard>
-      <Circle />
-      <Column>
-        <h3>Bob Sagget</h3>
-        <Row>
-          {
-            assignment.status === 'accepted' ?
-              <Button background="#0052CC">
-                Create Relationship
-              </Button> :
-              <Button background="#36B37E">
-                Accept
-              </Button>
-          }
-          <Button background="#FF5630" onClick={() => {}}>
-            Decline
-          </Button>
-        </Row>
-      </Column>
+      {
+        !isLoading && person ?
+          <>
+            <Circle>
+              <img src={person.attributes?.avatar} alt="Mentor/Coach avatar" />
+            </Circle>
+            <Column>
+              <h3>{dotProp.get(person, 'attributes.firstName')} {dotProp.get(person, 'attributes.lastName')}</h3>
+              <Row>
+                {
+                  assignment.status === 'accepted' ?
+                    <Button background="#0052CC">
+                      Create Relationship
+                    </Button> :
+                    <Button background="#36B37E">
+                      Accept
+                    </Button>
+                }
+                <Button background="#FF5630" onClick={() => {}}>
+                  Decline
+                </Button>
+              </Row>
+            </Column>
+          </> :
+          <Loading />
+      }
     </AssignmentCard>
   )
 };
