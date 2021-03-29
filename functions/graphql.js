@@ -4,6 +4,7 @@ const { ApolloServer, gql } = require('apollo-server-lambda');
 
 const getPerson = require('./controller/getPerson');
 const getPeople = require('./controller/getPeople');
+const getRequest = require('./controller/getRequest');
 const getRequests = require('./controller/getRequests');
 const getEmail = require('./controller/getEmail');
 const getPermissions = require('./controller/getPermissions');
@@ -103,6 +104,7 @@ const resolvers = {
     person: getPerson,
     people: getPeople,
     requests: getRequests,
+    request: getRequest,
   },
   Person: {
     email: (parent) => getEmail(parent.id),

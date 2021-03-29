@@ -35,6 +35,20 @@ const getAssignmentStatus = (note) => {
   return { status: 'unassigned', to: null };
 };
 
+const getAssignmentData = async ({ workflowId, ...request }) => {
+  const [, notes] = await apiGet('people', `workflows/${workflowId}/cards/${request.id}/notes`);
+
+  notes.data.reverse();
+  const note = notes.data.find(({ attributes }) => attributes.note.includes('Assignment'));
+  const { to, status } = getAssignmentStatus(note);
+
+  return {
+    ...request,
+    assignment: status,
+    leader: to,
+  };
+};
+
 const getRequests = async () => {
   const [mentorRequest, coachRequest] = (
     await Promise.all([
@@ -47,20 +61,10 @@ const getRequests = async () => {
     [
       ...mentorRequest.map(getDataShape('mentoring')),
       ...coachRequest.map(getDataShape('coaching')),
-    ].map(async ({ workflowId, ...request }) => {
-      const [, notes] = await apiGet('people', `workflows/${workflowId}/cards/${request.id}/notes`);
-
-      notes.data.reverse();
-      const note = notes.data.find(({ attributes }) => attributes.note.includes('Assignment'));
-      const { to, status } = getAssignmentStatus(note);
-
-      return {
-        ...request,
-        assignment: status,
-        leader: to,
-      };
-    }),
+    ].map(getAssignmentData),
   );
 };
 
 module.exports = getRequests;
+module.exports.getDataShape = getDataShape;
+module.exports.getAssignmentData = getAssignmentData;
