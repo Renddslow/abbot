@@ -6,6 +6,8 @@ const getPerson = require('./controller/getPerson');
 const getPeople = require('./controller/getPeople');
 const getRequest = require('./controller/getRequest');
 const getRequests = require('./controller/getRequests');
+const getRelationship = require('./controller/getRelationship');
+const getRelationships = require('./controller/getRelationships');
 const getEmail = require('./controller/getEmail');
 const getPermissions = require('./controller/getPermissions');
 
@@ -105,6 +107,8 @@ const resolvers = {
     people: getPeople,
     requests: getRequests,
     request: getRequest,
+    relationships: getRelationships,
+    relationship: getRelationship,
   },
   Person: {
     email: (parent) => getEmail(parent.id),
