@@ -13,6 +13,8 @@ const getEmail = require('./controller/getEmail');
 const getPermissions = require('./controller/getPermissions');
 
 const updateRequestAssignment = require('./controller/updateRequestAssignment');
+const deleteRequest = require('./controller/deleteRequest');
+const createRelationship = require('./controller/createRelationship');
 
 const typeDefs = gql`
   type Permission {
@@ -63,6 +65,10 @@ const typeDefs = gql`
     permissions: [Permission]
   }
 
+  type DeleteRequest {
+    deletedId: String!
+  }
+
   type Query {
     person(id: String): Person
     people: [Person]
@@ -95,7 +101,7 @@ const typeDefs = gql`
 
   type Mutation {
     updateAssignment(input: UpdateAssignmentInput!): Request
-    deleteRequest(input: DeleteRequestInput!): String
+    deleteRequest(input: DeleteRequestInput!): DeleteRequest
     createRelationship(input: CreateRelationshipInput!): Relationship
     archiveRelationship(input: ArchiveRelationshipInput!): String
   }
@@ -125,6 +131,8 @@ const resolvers = {
   },
   Mutation: {
     updateAssignment: updateRequestAssignment,
+    deleteRequest,
+    createRelationship,
   },
 };
 
