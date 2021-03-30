@@ -109,7 +109,7 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment, id }: Pro
         !isLoading && person ?
           <>
             <Circle>
-              <img src={person.attributes?.avatar} alt="Mentor/Coach avatar" />
+              <img src={""} alt="Mentor/Coach avatar" />
             </Circle>
             <Column>
               <h3>{dotProp.get(person, 'attributes.firstName')} {dotProp.get(person, 'attributes.lastName')}</h3>

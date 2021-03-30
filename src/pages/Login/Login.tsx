@@ -3,12 +3,12 @@ import Form, {Field, FormFooter} from '@atlaskit/form';
 import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
-import {useState} from 'react';
+import { useMutation, gql } from '@apollo/client';
 
 const Container = styled.section`
   display: flex;
   flex-direction: column;
-  margin: 0 auto 24px;
+  margin: 102px auto 24px;
   width: 400px;
   padding: 32px 40px;
   background: rgb(255, 255, 255);
@@ -26,25 +26,19 @@ const FlexContainer = styled.div`
   width: 100%;
 `;
 
+const CREATE_SESSION = gql`
+    mutation CreateSession($input: CreateSessionInput!) {
+        createSession(input: $input) {
+            message
+        }
+    }
+`;
+
 const Login = () => {
-  const [linkSent, setLinkSent] = useState(false);
+  const [sendMutation, { data, loading }] = useMutation(CREATE_SESSION);
 
   const onSubmit = async (state: any) => {
-    const res =await fetch('https://abbot-api-auevpolm5q-uc.a.run.app/session', {
-      method: 'POST',
-      body: JSON.stringify({
-        data: {
-          type: 'session',
-          attributes: {
-            email: state.email,
-          },
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((d) => d.json());
-    setLinkSent(res.meta.message);
+    sendMutation({ variables: { input: { email: state.email } } });
   };
 
   return (
@@ -54,19 +48,19 @@ const Login = () => {
         <div>Relationships</div>
       </div>
       {
-        linkSent ?
-          <div>{linkSent}</div> :
+        data ?
+          <div>{data.createSession.message}</div> :
           <Form onSubmit={onSubmit}>
-            {({ formProps, submitting}) => (
+            {({ formProps }) => (
               <form {...formProps}>
-                <Field label="Email Address" defaultValue="" name="email" isDisabled={submitting}>
+                <Field label="Email Address" defaultValue="" name="email" isDisabled={loading}>
                   {({ fieldProps }) => (
                     <Textfield {...fieldProps} />
                   )}
                 </Field>
                 <FormFooter>
                   {
-                    submitting ?
+                    loading ?
                       <FlexContainer>
                         <Spinner />
                       </FlexContainer> :

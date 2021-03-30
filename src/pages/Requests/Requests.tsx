@@ -1,9 +1,9 @@
 import React from 'react';
 import Spinner from '@atlaskit/spinner';
 import { RouteComponentProps } from 'react-router';
+import { useQuery, gql } from '@apollo/client';
 
 import Subheader from '../../components/Subheader';
-import api from '../../utils/api';
 import Section from '../../components/Section';
 import Card from '../../components/Card';
 import PageHeader from '../PageHeader';
@@ -14,14 +14,29 @@ type Data = {
   data: Array<RequestType>;
 };
 
-type Props = RouteComponentProps<{
-  id: string;
-}> & {
-  data: Data; // TODO: type this
-  loading: boolean;
-};
+const REQUESTS_QUERY = gql`
+    query Requests {
+        requests {
+            relationshipType
+            individual {
+                id
+                firstName
+                lastName
+                avatar
+            }
+            leader {
+                id
+                firstName
+                lastName
+                avatar
+            }
+        }
+    }
+`;
 
-const Requests = ({ data, loading }: Props) => {
+const Requests = () => {
+  const { data, loading } = useQuery(REQUESTS_QUERY);
+  console.log(data)
   return (
     <>
       <Subheader title="Requests" />
@@ -32,13 +47,13 @@ const Requests = ({ data, loading }: Props) => {
           </div>
         ) : (
           <>
-            <PageHeader createLabel="Request" length={data.data.length} />
+            <PageHeader createLabel="Request" length={data.requests.length} />
             <Grid>
-              {data.data.map((rel) => (
+              {data.requests.map((rel: RequestType) => (
                 <Card
                   key={rel.id}
-                  participant={rel.relationships.individual}
-                  relationshipType={rel.attributes.relationshipType}
+                  participant={rel.individual}
+                  relationshipType={rel.relationshipType}
                   to={`/requests/${rel.id}`}
                 />
               ))}
@@ -50,7 +65,4 @@ const Requests = ({ data, loading }: Props) => {
   );
 };
 
-export default api(Requests, {
-  route: 'requests',
-  method: 'GET',
-});
+export default Requests;

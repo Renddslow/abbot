@@ -52,8 +52,18 @@ const getAssignmentData = async ({ workflowId, ...request }) => {
 const getRequests = async () => {
   const [mentorRequest, coachRequest] = (
     await Promise.all([
-      apiGet('people', 'workflows/264250/cards'),
-      apiGet('people', 'workflows/101579/cards'),
+      apiGet('people', 'workflows/264250/cards', {
+        where: {
+          step_id: '649219',
+          stage: 'ready',
+        },
+      }),
+      apiGet('people', 'workflows/101579/cards', {
+        where: {
+          step_id: '267426',
+          stage: 'ready',
+        },
+      }),
     ])
   ).map(([, data]) => (data ? data.data : []));
 

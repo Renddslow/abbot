@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.3.13",
     "@atlaskit/button": "^15.1.4",
     "@atlaskit/form": "^8.2.0",
     "@atlaskit/spinner": "^15.0.6",

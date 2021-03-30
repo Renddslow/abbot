@@ -102,10 +102,10 @@ const MentorsTray = (props: Props) => {
               props.data.data.map((person) => (
                 <AssignmentCard>
                   <Image>
-                    <img src={person.attributes.avatar} alt={`Avatar of ${person.attributes.name}`} />
+                    <img src={person.avatar} alt={`Avatar of ${person.name}`} />
                   </Image>
                   <Column>
-                    <h2>{person.attributes.name}</h2>
+                    <h2>{person.name}</h2>
                     { !isAssigning && <Button background="#36B37E" onClick={onClick(person)}>Assign</Button> }
                   </Column>
                 </AssignmentCard>
