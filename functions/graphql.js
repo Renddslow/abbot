@@ -15,6 +15,7 @@ const getPermissions = require('./controller/getPermissions');
 const updateRequestAssignment = require('./controller/updateRequestAssignment');
 const deleteRequest = require('./controller/deleteRequest');
 const createRelationship = require('./controller/createRelationship');
+const createSession = require('./controller/createSession');
 
 const typeDefs = gql`
   type Permission {
@@ -69,6 +70,10 @@ const typeDefs = gql`
     deletedId: String!
   }
 
+  type SessionMessage {
+    message: String
+  }
+
   type Query {
     person(id: String): Person
     people: [Person]
@@ -99,11 +104,16 @@ const typeDefs = gql`
     id: String
   }
 
+  input CreateSessionInput {
+    email: String!
+  }
+
   type Mutation {
     updateAssignment(input: UpdateAssignmentInput!): Request
     deleteRequest(input: DeleteRequestInput!): DeleteRequest
     createRelationship(input: CreateRelationshipInput!): Relationship
     archiveRelationship(input: ArchiveRelationshipInput!): String
+    createSession(input: CreateSessionInput!): SessionMessage
   }
 `;
 
@@ -133,6 +143,8 @@ const resolvers = {
     updateAssignment: updateRequestAssignment,
     deleteRequest,
     createRelationship,
+    createSession,
+    // TODO: archive relationship
   },
 };
 
