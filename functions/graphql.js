@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const { ApolloServer, gql } = require('apollo-server-lambda');
+const jwt = require('jsonwebtoken');
 
 const getPerson = require('./controller/getPerson');
 const getPeople = require('./controller/getPeople');
@@ -16,6 +17,10 @@ const updateRequestAssignment = require('./controller/updateRequestAssignment');
 const deleteRequest = require('./controller/deleteRequest');
 const createRelationship = require('./controller/createRelationship');
 const createSession = require('./controller/createSession');
+
+const withAuth = require('./utils/withAuth');
+
+const SECRET = process.env.SECRET;
 
 const typeDefs = gql`
   type Permission {
@@ -119,13 +124,13 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    person: getPerson,
-    people: getPeople,
-    requests: getRequests,
-    request: getRequest,
-    relationships: getRelationships,
-    relationship: getRelationship,
-    leaders: getLeaders,
+    person: withAuth(getPerson),
+    people: withAuth(getPeople),
+    requests: withAuth(getRequests),
+    request: withAuth(getRequest),
+    relationships: withAuth(getRelationships),
+    relationship: withAuth(getRelationship),
+    leaders: withAuth(getLeaders),
   },
   Person: {
     email: (parent) => getEmail(parent.id),
@@ -148,9 +153,43 @@ const resolvers = {
   },
 };
 
+const tryout = (cb) => {
+  try {
+    return [null, cb()];
+  } catch (e) {
+    return [e.name === 'TokenExpiredError' ? e.name : 'InvalidTokenError', null];
+  }
+};
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ event }) => {
+    const header = event.headers.authorization;
+
+    if (!header) return { auth: null };
+
+    const [, token] = header.split(' ');
+    const [err, data] = tryout(() => jwt.verify(token, SECRET));
+
+    if (err) {
+      console.error(err);
+      return { auth: null };
+    }
+
+    const authScope = {
+      ...data,
+      permissions: await getPermissions(data.id),
+    };
+
+    authScope.canStillUseApp = authScope.permissions.filter(
+      ({ name, allowed }) => name === 'has_app_access' && allowed,
+    ).length;
+
+    return {
+      auth: authScope,
+    };
+  },
 });
 
 exports.handler = server.createHandler();
