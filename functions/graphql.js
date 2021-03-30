@@ -8,8 +8,11 @@ const getRequest = require('./controller/getRequest');
 const getRequests = require('./controller/getRequests');
 const getRelationship = require('./controller/getRelationship');
 const getRelationships = require('./controller/getRelationships');
+const getLeaders = require('./controller/getLeaders');
 const getEmail = require('./controller/getEmail');
 const getPermissions = require('./controller/getPermissions');
+
+const updateRequestAssignment = require('./controller/updateRequestAssignment');
 
 const typeDefs = gql`
   type Permission {
@@ -60,14 +63,10 @@ const typeDefs = gql`
     permissions: [Permission]
   }
 
-  enum PersonType {
-    mentor
-    coach
-  }
-
   type Query {
     person(id: String): Person
-    people(type: PersonType): [Person]
+    people: [Person]
+    leaders(relationshipType: RelationshipType): [Person]
     relationship(id: String): Relationship
     relationships: [Relationship]
     request(id: String): Request
@@ -75,8 +74,9 @@ const typeDefs = gql`
   }
 
   input UpdateAssignmentInput {
-    id: String
-    assignment: Assignment
+    id: String!
+    assignment: Assignment!
+    to: String!
   }
 
   input DeleteRequestInput {
@@ -109,6 +109,7 @@ const resolvers = {
     request: getRequest,
     relationships: getRelationships,
     relationship: getRelationship,
+    leaders: getLeaders,
   },
   Person: {
     email: (parent) => getEmail(parent.id),
@@ -121,6 +122,9 @@ const resolvers = {
   Request: {
     leader: (parent) => getPerson({}, { id: parent.leader }),
     individual: (parent) => getPerson({}, { id: parent.individual }),
+  },
+  Mutation: {
+    updateAssignment: updateRequestAssignment,
   },
 };
 

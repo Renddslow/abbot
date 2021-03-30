@@ -4,6 +4,7 @@ const { getDataShape, getAssignmentData } = require('./getRequests');
 const getBoth = async (calls, names) => {
   const responses = await Promise.all(calls.map((c) => c()));
   const validIndex = responses.findIndex(([, data]) => !!data);
+  if (validIndex < 0) return [];
   return [responses[validIndex][1], names[validIndex]];
 };
 
@@ -24,3 +25,4 @@ const getRequest = async (parent, args) => {
 };
 
 module.exports = getRequest;
+module.exports.getBoth = getBoth;
