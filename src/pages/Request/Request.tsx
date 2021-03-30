@@ -2,21 +2,18 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { get } from 'dot-prop';
 import styled from 'styled-components';
+import { useQuery, gql } from '@apollo/client';
 
 import Modal from '../../components/Modal';
-import api from '../../utils/api';
-import { RequestType } from '../../types';
 import Tag from '../../components/Tag';
 import { TagRaw } from '../../components/Tag/Tag';
 import MentorsTray from './MentorsTray';
 import Assignment from './Assignment';
 
 type Props = {
-  data: {
-    data: RequestType;
+  match: {
+    params: { id: string };
   };
-  loading: boolean;
-  id: string;
 };
 
 const Row = styled.div`
@@ -83,19 +80,36 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
 });
 
-const Request = ({ data, loading }: Props) => {
+const REQUEST = gql`
+  query Request($id: String!) {
+    request(id: $id) {
+      id
+      created
+      leader {
+        firstName
+        lastName
+        avatar
+      }
+      relationshipType
+      assignment
+      individual {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+`;
+
+const Request = ({ match }: Props) => {
   const history = useHistory();
   const [showTray, setShowTray] = useState(false);
+  const { data, loading } = useQuery(REQUEST, { variables: { id: match.params.id } });
 
-  const firstName = !loading
-    ? get(data.data, 'relationships.individual.data.attributes.firstName', '')
-    : '';
-  const lastName = !loading
-    ? get(data.data, 'relationships.individual.data.attributes.lastName', '')
-    : '';
-  const relationshipType = get(data, 'data.attributes.relationshipType', 'mentoring');
-
-  const assignment = get(data, 'data.attributes.assignment', {} as { [key: string]: any });
+  const firstName = get(data, 'request.individual.firstName', '');
+  const lastName = get(data, 'request.individual.lastName', '');
+  const relationshipType = get(data, 'request.relationshipType');
+  const assignment = get(data, 'request.assignment', '' as 'unassigned' | 'rejected' | 'pending' | 'accepted' | '');
 
   return (
     <Modal
@@ -105,10 +119,10 @@ const Request = ({ data, loading }: Props) => {
         <>
           <h2>Next Steps</h2>
           <List>
-            <ListItem completed={assignment.status !== 'unassigned'}>
+            <ListItem completed={assignment !== 'unassigned'}>
               Assign person to mentor/coach
             </ListItem>
-            <ListItem completed={assignment.status === 'accepted'}>
+            <ListItem completed={assignment === 'accepted'}>
               Await acceptance of assignment
             </ListItem>
             <ListItem>Confirm accepted assignment and create relationship</ListItem>
@@ -119,7 +133,7 @@ const Request = ({ data, loading }: Props) => {
         <Link
           href={`https://people.planningcenteronline.com/people/AC${get(
             data,
-            'data.relationships.individual.data.id',
+            'request.individual.id',
           )}`}
           target="_blank"
         >
@@ -129,9 +143,8 @@ const Request = ({ data, loading }: Props) => {
       renderMetaRow={() => (
         <Row>
           <Tag>{relationshipType as 'mentoring' | 'coaching'}</Tag>
-          <Datetime title={get(data, 'data.attributes.created', '2020-01-01')}>
-            Open since{' '}
-            {formatter.format(new Date(get(data, 'data.attributes.created', '2020-01-01')))}
+          <Datetime title={get(data, 'request.created', '2020-01-01')}>
+            Open since {formatter.format(new Date(get(data, 'request.created', '2020-01-01')))}
           </Datetime>
         </Row>
       )}
@@ -151,9 +164,9 @@ const Request = ({ data, loading }: Props) => {
       <div>
         <h2>Assignment</h2>
         <Assignment
-          id={assignment.to}
+          leader={get(data, 'request.leader', {})}
           assignment={assignment}
-          relationshipType={relationshipType}
+          relationshipType={relationshipType as 'mentoring' | 'coaching'}
           showTray={showTray}
           onClick={() => setShowTray(true)}
         />
@@ -162,7 +175,4 @@ const Request = ({ data, loading }: Props) => {
   );
 };
 
-export default api(Request, {
-  route: ({ match }) => `requests/${match.params.id}`,
-  method: 'GET',
-});
+export default Request;

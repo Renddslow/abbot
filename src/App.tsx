@@ -57,7 +57,7 @@ function App() {
                 <Route exact path="/requests" component={Requests} />
                 <Route path="/*" component={() => <Redirect to="/requests" />} />
               </Switch>
-              {/*{ background && <Route path="/requests/:id" component={Request} /> }*/}
+              { background && <Route path="/requests/:id" component={Request} /> }
             </div>
           ) : (
             <Login />

@@ -1,6 +1,5 @@
 import React from 'react';
 import Spinner from '@atlaskit/spinner';
-import { RouteComponentProps } from 'react-router';
 import { useQuery, gql } from '@apollo/client';
 
 import Subheader from '../../components/Subheader';
@@ -10,13 +9,10 @@ import PageHeader from '../PageHeader';
 import Grid from '../Grid';
 import { RequestType } from '../../types';
 
-type Data = {
-  data: Array<RequestType>;
-};
-
 const REQUESTS_QUERY = gql`
     query Requests {
         requests {
+            id
             relationshipType
             individual {
                 id
@@ -36,7 +32,6 @@ const REQUESTS_QUERY = gql`
 
 const Requests = () => {
   const { data, loading } = useQuery(REQUESTS_QUERY);
-  console.log(data)
   return (
     <>
       <Subheader title="Requests" />
