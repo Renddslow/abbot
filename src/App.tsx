@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink, concat } from '@apollo/client';
 
 import AuthProvider from './Auth';
@@ -9,7 +9,6 @@ import Relationships from './pages/Relationships';
 
 import Header from './components/Header';
 import Requests from './pages/Requests/Requests';
-import Request from './pages/Request/Request';
 
 const httpLink = new HttpLink({ uri: '/.netlify/functions/graphql' });
 
@@ -32,10 +31,6 @@ const client = new ApolloClient({
 });
 
 function App() {
-  const location = useLocation();
-  // @ts-ignore
-  const background = location.state && location.state.background;
-
   return (
     <ApolloProvider client={client}>
       <AuthProvider>
@@ -43,7 +38,7 @@ function App() {
           loggedIn ? (
             <div className="App">
               <Header />
-              <Switch location={background || location}>
+              <Switch>
                 <Route path="/relationships/:id" component={() => <div />} />
                 <Route exact path="/relationships" component={Relationships} />
 
@@ -54,10 +49,9 @@ function App() {
                       - Todo items
                    */
                 }
-                <Route exact path="/requests" component={Requests} />
+                <Route path="/requests" component={Requests} />
                 <Route path="/*" component={() => <Redirect to="/requests" />} />
               </Switch>
-              { background && <Route path="/requests/:id" component={Request} /> }
             </div>
           ) : (
             <Login />

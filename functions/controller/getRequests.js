@@ -38,14 +38,18 @@ const getAssignmentStatus = (note) => {
 const getAssignmentData = async ({ workflowId, ...request }) => {
   const [, notes] = await apiGet('people', `workflows/${workflowId}/cards/${request.id}/notes`);
 
-  notes.data.reverse();
-  const note = notes.data.find(({ attributes }) => attributes.note.includes('Assignment'));
+  const sortedNotes = notes.data.sort((a, b) => {
+    if (a.attributes.created_at > b.attributes.created_at) return -1;
+    if (a.attributes.created_at < b.attributes.created_at) return 1;
+    return 0;
+  });
+  const note = sortedNotes.find(({ attributes }) => attributes.note.includes('Assignment'));
   const { to, status } = getAssignmentStatus(note);
 
   return {
     ...request,
     assignment: status,
-    leader: to,
+    leader: to || null,
   };
 };
 

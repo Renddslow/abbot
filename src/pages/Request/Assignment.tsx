@@ -1,11 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { gql, useMutation } from '@apollo/client';
 
 import Button from '../../components/Button';
 import AssignmentCard from '../../components/AssignmentCard';
 
 type Props = {
   assignment: any;
+  id: string;
   leader: Record<string, any>;
   relationshipType: 'mentoring' | 'coaching';
   showTray: boolean;
@@ -34,7 +36,7 @@ const Circle = styled.div`
   justify-content: center;
   border-radius: 50%;
   overflow: hidden;
-  
+
   img {
     width: 100%;
     height: 100%;
@@ -62,10 +64,42 @@ const Row = styled.div`
   justify-content: start;
 `;
 
-const Assignment = ({ showTray, onClick, relationshipType, assignment, leader }: Props) => {
+const UPDATE_ASSIGNMENT = gql`
+  mutation UpdateAssignment($input: UpdateAssignmentInput!) {
+    updateAssignment(input: $input) {
+      id
+      created
+      leader {
+        firstName
+        lastName
+        avatar
+      }
+      relationshipType
+      assignment
+      individual {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+`;
 
-  return (
-    assignment === 'unassigned' ?
+const Assignment = ({ showTray, onClick, relationshipType, assignment, leader, id }: Props) => {
+  const [update, { data }] = useMutation(UPDATE_ASSIGNMENT);
+
+  const updateAssignment = (status: 'accepted' | 'pending' | 'declined' | 'unassigned' | 'rejected') => () =>
+    update({
+      variables: {
+        input: {
+          id,
+          to: leader.id,
+          assignment: status,
+        }
+      },
+    });
+
+  return assignment === 'unassigned' ? (
     <AssignmentCard>
       <UnassignedCircle>?</UnassignedCircle>
       <Column>
@@ -76,32 +110,34 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment, leader }:
           </Button>
         )}
       </Column>
-    </AssignmentCard> :
+    </AssignmentCard>
+  ) : (
     <AssignmentCard>
       <>
         <Circle>
           <img src={leader.avatar} alt="Mentor/Coach avatar" />
         </Circle>
         <Column>
-          <h3>{leader.firstName} {leader.lastName}</h3>
+          <h3>
+            {leader.firstName} {leader.lastName}
+          </h3>
           <Row>
-            {
-              assignment.status === 'accepted' ?
-                <Button background="#0052CC">
-                  Create Relationship
-                </Button> :
-                <Button background="#36B37E">
-                  Accept
-                </Button>
-            }
+            {assignment.status === 'accepted' ? (
+              <Button background="#0052CC">Create Relationship</Button>
+            ) : (
+              <Button background="#36B37E">Accept</Button>
+            )}
             <Button background="#FF5630" onClick={() => {}}>
               Decline
+            </Button>
+            <Button background="#0052CC" onClick={updateAssignment('unassigned')}>
+              Unassign
             </Button>
           </Row>
         </Column>
       </>
     </AssignmentCard>
-  )
+  );
 };
 
 export default Assignment;

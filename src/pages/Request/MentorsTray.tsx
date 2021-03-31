@@ -2,18 +2,14 @@ import {useContext, useState} from 'react';
 import styled from 'styled-components';
 import Spinner from '@atlaskit/spinner';
 
-import withPagination from '../../utils/withPagination';
 import AssignmentCard from '../../components/AssignmentCard';
 import {Person} from '../../types';
 import Button from '../../components/Button';
 import {AuthContext} from '../../Auth';
+import {useQuery, gql} from '@apollo/client';
 
 type Props = {
-  data: {
-    data: Array<Person>;
-  };
   requestId: string;
-  loading: boolean;
   relationshipType: 'mentoring' | 'coaching';
   onExit: (person: Person) => void;
 };
@@ -60,8 +56,21 @@ const Image = styled.div`
   }
 `;
 
+const LEADERS = gql`
+    query Leaders($type: RelationshipType!) {
+        leaders(relationshipType: $type) {
+            firstName
+            lastName
+            name
+            avatar
+            id
+        }
+    }
+`;
+
 const MentorsTray = (props: Props) => {
   const [isAssigning, setIsAssigning] = useState(false);
+  const { data, loading } = useQuery(LEADERS, { variables: { type: props.relationshipType } });
   const { user } = useContext(AuthContext);
 
   const onClick = (person: Person) => async () => {
@@ -69,24 +78,6 @@ const MentorsTray = (props: Props) => {
     if (!user) {
       throw Error();
     }
-
-    await fetch(`https://abbot-api-auevpolm5q-uc.a.run.app/requests/${props.requestId}/assignment`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.token}`,
-      },
-      body: JSON.stringify({
-        data: {
-          id: props.requestId,
-          type: 'assignment',
-          attributes: {
-            to: person.id,
-            status: 'pending',
-          },
-        },
-      }),
-    });
     setIsAssigning(false);
     props.onExit(person);
   };
@@ -95,12 +86,12 @@ const MentorsTray = (props: Props) => {
     <Container>
       <h2>{ props.relationshipType === 'mentoring' ? 'Mentors' : 'Coaches' }</h2>
       {
-        props.loading ?
+        loading ?
           <Spinner /> :
           <Grid>
             {
-              props.data.data.map((person) => (
-                <AssignmentCard>
+              data.leaders.map((person: Person) => (
+                <AssignmentCard key={person.id}>
                   <Image>
                     <img src={person.avatar} alt={`Avatar of ${person.name}`} />
                   </Image>
@@ -117,7 +108,4 @@ const MentorsTray = (props: Props) => {
   );
 };
 
-export default withPagination(MentorsTray, {
-  route: ({ relationshipType }) => relationshipType === 'mentoring' ? 'mentors' : 'coaches',
-  method: 'GET',
-});
+export default MentorsTray;

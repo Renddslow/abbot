@@ -86,6 +86,7 @@ const REQUEST = gql`
       id
       created
       leader {
+        id
         firstName
         lastName
         avatar
@@ -151,8 +152,8 @@ const Request = ({ match }: Props) => {
       renderTray={() =>
         showTray && (
           <MentorsTray
-            relationshipType={relationshipType}
-            requestId={data.data.id}
+            relationshipType={relationshipType as 'mentoring' | 'coaching' }
+            requestId={data.id}
             onExit={() => {
               setShowTray(false);
             }}
@@ -164,6 +165,7 @@ const Request = ({ match }: Props) => {
       <div>
         <h2>Assignment</h2>
         <Assignment
+          id={get(data, 'request.id', '')}
           leader={get(data, 'request.leader', {})}
           assignment={assignment}
           relationshipType={relationshipType as 'mentoring' | 'coaching'}

@@ -30,7 +30,10 @@ const updateRequestAssignment = async (parent, args) => {
   const reqData = {
     type: 'WorkflowCardNote',
     attributes: {
-      note: `${message(args.input.assignment)} ${args.input.to}`,
+      note:
+        args.input.assignment === 'unassigned'
+          ? 'No Assignment'
+          : `${message(args.input.assignment)} ${args.input.to}`,
     },
   };
 
