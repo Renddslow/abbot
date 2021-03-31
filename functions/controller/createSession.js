@@ -1,17 +1,14 @@
-const path = require('path');
 const { get } = require('dot-prop');
 const jwt = require('jsonwebtoken');
 const ejs = require('ejs');
-const { promisify } = require('util');
 
 const { getFieldId } = require('./fields');
 const getPermissions = require('./getPermissions');
 const { apiGet } = require('../utils/api');
 const sendEmail = require('../utils/sendEmail');
+const template = require('./template');
 
 const SECRET = process.env.SECRET;
-
-const renderFile = promisify(ejs.renderFile);
 
 const createSession = async (parent, args) => {
   const { email } = args.input;
@@ -63,7 +60,7 @@ const createSession = async (parent, args) => {
   }
 
   // email tokens
-  const message = await renderFile(path.join(__dirname, './template.ejs'), { permittedTokens });
+  const message = ejs.render(template, { permittedTokens });
   await sendEmail(email, 'Your Magic Link for Flatland Relationships', message);
 
   const plural = new Intl.PluralRules('en-US', { type: 'ordinal' });
