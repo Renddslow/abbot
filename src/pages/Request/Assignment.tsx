@@ -1,9 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { UnassignedCircle, Circle, ButtonRow, Column } from './styled';
 
 import Button from '../../components/Button';
 import AssignmentCard from '../../components/AssignmentCard';
+import UPDATE_ASSIGNMENT from './updateAssignmentMutation';
 
 type Props = {
   assignment: any;
@@ -14,88 +15,19 @@ type Props = {
   onClick: () => void;
 };
 
-const UnassignedCircle = styled.div`
-  background: #545454;
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  width: 50px;
-  height: 50px;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 20px;
-`;
-
-const Circle = styled.div`
-  position: relative;
-  display: flex;
-  width: 50px;
-  height: 50px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    position: absolute;
-  }
-`;
-
-const Column = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-gap: 8px;
-`;
-
-const Row = styled.div`
-  display: grid;
-  grid-auto-flow: column;
-  grid-gap: 6px;
-  width: 100%;
-  justify-content: start;
-`;
-
-const UPDATE_ASSIGNMENT = gql`
-  mutation UpdateAssignment($input: UpdateAssignmentInput!) {
-    updateAssignment(input: $input) {
-      id
-      created
-      leader {
-        firstName
-        lastName
-        avatar
-      }
-      relationshipType
-      assignment
-      individual {
-        id
-        firstName
-        lastName
-      }
-    }
-  }
-`;
-
 const Assignment = ({ showTray, onClick, relationshipType, assignment, leader, id }: Props) => {
-  const [update, { data }] = useMutation(UPDATE_ASSIGNMENT);
+  const [update] = useMutation(UPDATE_ASSIGNMENT);
 
-  const updateAssignment = (status: 'accepted' | 'pending' | 'declined' | 'unassigned' | 'rejected') => () =>
+  const updateAssignment = (
+    status: 'accepted' | 'pending' | 'declined' | 'unassigned' | 'rejected',
+  ) => () =>
     update({
       variables: {
         input: {
           id,
           to: leader.id,
           assignment: status,
-        }
+        },
       },
     });
 
@@ -121,7 +53,7 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment, leader, i
           <h3>
             {leader.firstName} {leader.lastName}
           </h3>
-          <Row>
+          <ButtonRow>
             {assignment.status === 'accepted' ? (
               <Button background="#0052CC">Create Relationship</Button>
             ) : (
@@ -133,7 +65,7 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment, leader, i
             <Button background="#0052CC" onClick={updateAssignment('unassigned')}>
               Unassign
             </Button>
-          </Row>
+          </ButtonRow>
         </Column>
       </>
     </AssignmentCard>
