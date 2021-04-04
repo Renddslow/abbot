@@ -117,7 +117,7 @@ const Request = ({ match }: Props) => {
           />
         </div>
         <div>
-          <Button background="" blackText>Notify {relationshipType === 'mentoring' ? 'Mentor' : 'Coach'}</Button>
+          { assignment !== 'unassigned' && <Button background="" blackText>Notify {relationshipType === 'mentoring' ? 'Mentor' : 'Coach'}</Button> }
         </div>
       </>
     </Modal>

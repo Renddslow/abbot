@@ -1,10 +1,11 @@
 import React from 'react';
 import { useMutation } from '@apollo/client';
-import { UnassignedCircle, Circle, ButtonRow, Column } from './styled';
 
+import { UnassignedCircle, Circle, Column } from './styled';
 import Button from '../../components/Button';
 import AssignmentCard from '../../components/AssignmentCard';
 import UPDATE_ASSIGNMENT from './updateAssignmentMutation';
+import ButtonRow from './ButtonRow';
 
 type Props = {
   assignment: any;
@@ -19,8 +20,8 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment, leader, i
   const [update] = useMutation(UPDATE_ASSIGNMENT);
 
   const updateAssignment = (
-    status: 'accepted' | 'pending' | 'declined' | 'unassigned' | 'rejected',
-  ) => () =>
+    status: 'accepted' | 'pending' | 'declined' | 'unassigned' | 'rejected' | 'create',
+  ) =>
     update({
       variables: {
         input: {
@@ -53,19 +54,7 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment, leader, i
           <h3>
             {leader.firstName} {leader.lastName}
           </h3>
-          <ButtonRow>
-            {assignment.status === 'accepted' ? (
-              <Button background="#0052CC">Create Relationship</Button>
-            ) : (
-              <Button background="#36B37E">Accept</Button>
-            )}
-            <Button background="#FF5630" onClick={() => {}}>
-              Decline
-            </Button>
-            <Button background="#0052CC" onClick={updateAssignment('unassigned')}>
-              Unassign
-            </Button>
-          </ButtonRow>
+          <ButtonRow onClick={updateAssignment} assignment={assignment} />
         </Column>
       </>
     </AssignmentCard>

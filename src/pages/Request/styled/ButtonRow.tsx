@@ -6,6 +6,7 @@ const ButtonRow = styled.div`
   grid-gap: 6px;
   width: 100%;
   justify-content: start;
+  align-items: center;
 `;
 
 export default ButtonRow;

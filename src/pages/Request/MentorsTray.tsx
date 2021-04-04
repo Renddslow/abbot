@@ -1,4 +1,3 @@
-import { useContext, useState } from 'react';
 import Spinner from '@atlaskit/spinner';
 import { useQuery, gql, useMutation } from '@apollo/client';
 
