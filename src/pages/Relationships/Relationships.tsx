@@ -1,47 +1,38 @@
 import React from 'react';
 import Spinner from '@atlaskit/spinner';
+import { useQuery, gql } from '@apollo/client';
 
 import Subheader from '../../components/Subheader';
-import api from '../../utils/api';
 import Section from '../../components/Section';
 import Card from '../../components/Card';
 import PageHeader from '../PageHeader';
 import Grid from '../Grid';
 
-type Person = {
-  type: 'person';
-  id: string;
-  attributes: {
-    firstName: string;
-    lastName: string;
-    avatar: string;
-  };
-}
+const RELATIONSHIPS = gql`
+    query GetRelationships {
+        relationships {
+            id
+            relationshipType
+            created
+            individual {
+                id
+                firstName
+                lastName
+                avatar
+            }
+            leader {
+                id
+                firstName
+                lastName
+                avatar
+            }
+        }
+    }
+`;
 
-type Data = {
-  data: Array<{
-    type: 'relationship';
-    id: string;
-    attributes: {
-      relationshipType: 'mentoring' | 'coaching';
-    };
-    relationships: {
-      leader: {
-        data: Person;
-      };
-      individual: {
-        data: Person;
-      };
-    };
-  }>;
-};
+const Relationships = () => {
+  const { data, loading } = useQuery(RELATIONSHIPS);
 
-type Props = {
-  data: Data; // TODO: type this
-  loading: boolean;
-};
-
-const Relationships = ({ data, loading }: Props) => {
   return (
     <>
       <Subheader title="Relationships" />
@@ -52,15 +43,15 @@ const Relationships = ({ data, loading }: Props) => {
           </div>
         ) : (
           <>
-            <PageHeader createLabel="Relationship" length={data.data.length} onCreate={() => {}} />
+            <PageHeader createLabel="Relationship" length={data.relationships.length} onCreate={() => {}} />
             <Grid>
-              {data.data.map((rel) => (
+              {data.relationships.map((relationship: Record<string, any>) => (
                 <Card
-                  key={rel.id}
-                  to={`/relationships/${rel.id}`}
-                  leader={rel.relationships.leader}
-                  participant={rel.relationships.individual}
-                  relationshipType={rel.attributes.relationshipType}
+                  key={relationship.id}
+                  to={`/relationships/${relationship.id}`}
+                  leader={relationship.leader}
+                  participant={relationship.individual}
+                  relationshipType={relationship.relationshipType}
                 />
               ))}
             </Grid>
@@ -71,7 +62,4 @@ const Relationships = ({ data, loading }: Props) => {
   );
 };
 
-export default api(Relationships, {
-  route: 'relationships',
-  method: 'GET',
-});
+export default Relationships;
