@@ -39,8 +39,6 @@ const ButtonRowComponent = ({ assignment, onClick }: Props) => {
 
   buttons.push({ type: 'button', id: 'unassigned', label: 'Unassign', color: '#0052CC' });
 
-  console.log(buttons)
-
   return (
     <ButtonRow>
       {

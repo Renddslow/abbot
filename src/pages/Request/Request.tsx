@@ -52,7 +52,11 @@ const Request = ({ match }: Props) => {
   const firstName = get(data, 'request.individual.firstName', '');
   const lastName = get(data, 'request.individual.lastName', '');
   const relationshipType = get(data, 'request.relationshipType');
-  const assignment = get(data, 'request.assignment', '' as 'unassigned' | 'rejected' | 'pending' | 'accepted' | '');
+  const assignment = get(
+    data,
+    'request.assignment',
+    '' as 'unassigned' | 'rejected' | 'pending' | 'accepted' | '',
+  );
 
   return (
     <Modal
@@ -94,7 +98,7 @@ const Request = ({ match }: Props) => {
       renderTray={() =>
         showTray && (
           <MentorsTray
-            relationshipType={relationshipType as 'mentoring' | 'coaching' }
+            relationshipType={relationshipType as 'mentoring' | 'coaching'}
             requestId={get(data, 'request.id', '')}
             onExit={() => {
               setShowTray(false);
@@ -110,6 +114,7 @@ const Request = ({ match }: Props) => {
           <Assignment
             id={get(data, 'request.id', '')}
             leader={get(data, 'request.leader', {})}
+            individual={get(data, 'request.individual', {})}
             assignment={assignment}
             relationshipType={relationshipType as 'mentoring' | 'coaching'}
             showTray={showTray}
@@ -117,7 +122,11 @@ const Request = ({ match }: Props) => {
           />
         </div>
         <div>
-          { assignment !== 'unassigned' && <Button background="" blackText>Notify {relationshipType === 'mentoring' ? 'Mentor' : 'Coach'}</Button> }
+          {assignment !== 'unassigned' && (
+            <Button background="" blackText>
+              Notify {relationshipType === 'mentoring' ? 'Mentor' : 'Coach'}
+            </Button>
+          )}
         </div>
       </>
     </Modal>
