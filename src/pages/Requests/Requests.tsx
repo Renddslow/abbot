@@ -1,7 +1,7 @@
 import React from 'react';
 import Spinner from '@atlaskit/spinner';
 import { useQuery, gql } from '@apollo/client';
-import {Route} from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 import Subheader from '../../components/Subheader';
 import Section from '../../components/Section';
@@ -47,7 +47,7 @@ const Requests = () => {
           </div>
         ) : (
           <>
-            <PageHeader createLabel="Request" length={data.requests.length} />
+            <PageHeader createLabel="Request" length={requests.length} />
             <Grid>
               {requests.slice().sort((a: RequestType, b: RequestType) => {
                   if (a.created > b.created) return 1;
@@ -65,7 +65,7 @@ const Requests = () => {
           </>
         )}
       </Section>
-        <Route path="/requests/:id" component={Request} />
+      <Route path="/requests/:id" component={Request} />
     </>
   );
 };

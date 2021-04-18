@@ -106,7 +106,7 @@ const Request = ({ match }: Props) => {
           />
         )
       }
-      onExit={() => history.goBack()}
+      onExit={() => history.push('/requests')}
     >
       <>
         <div>

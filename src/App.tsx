@@ -39,9 +39,6 @@ function App() {
             <div className="App">
               <Header />
               <Switch>
-                <Route path="/relationships/:id" component={() => <div />} />
-                <Route exact path="/relationships" component={Relationships} />
-
                 {
                   /* TODO:
                     - Request modals
@@ -49,6 +46,7 @@ function App() {
                       - Todo items
                    */
                 }
+                <Route path="/relationships" component={Relationships} />
                 <Route path="/requests" component={Requests} />
                 <Route path="/*" component={() => <Redirect to="/requests" />} />
               </Switch>

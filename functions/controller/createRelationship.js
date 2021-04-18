@@ -1,8 +1,12 @@
 const { get } = require('dot-prop');
+const fauna = require('faunadb');
+const cuid = require('cuid');
 
-const { apiGet, apiPost } = require('../utils/api');
+const { apiGet } = require('../utils/api');
 const getRelationship = require('./getRelationship');
-const { createGroup } = require('./createGroup');
+
+const q = fauna.query;
+const client = new fauna.Client({ secret: process.env.FAUNA_KEY });
 
 const createRelationship = async (parent, args) => {
   const [leader, member] = await Promise.all([
@@ -17,30 +21,20 @@ const createRelationship = async (parent, args) => {
 
   const now = new Date().toISOString();
 
-  const groupId = await createGroup(title);
+  const data = {
+    id: cuid(),
+    archived: false,
+    meta: {},
+    created: now,
+    relationshipType: args.input.relationshipType,
+    leader: args.input.leaderId,
+    individual: args.input.individualId,
+    name: title,
+  };
 
-  await Promise.all([
-    apiPost('groups', `groups/${groupId}/memberships`, {
-      data: {
-        attributes: {
-          person_id: leader.data.id,
-          role: 'leader',
-          joined_at: now,
-        },
-      },
-    }),
-    apiPost('groups', `groups/${groupId}/memberships`, {
-      data: {
-        attributes: {
-          person_id: member.data.id,
-          role: 'member',
-          joined_at: now,
-        },
-      },
-    }),
-  ]);
+  await client.query(q.Create(q.Collection('relationships'), { data }));
 
-  return getRelationship({}, { id: groupId });
+  return getRelationship({}, { id: data.id });
 };
 
 module.exports = createRelationship;

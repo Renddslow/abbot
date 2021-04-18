@@ -42,9 +42,11 @@ const typeDefs = gql`
     rejected
   }
 
+  scalar Meta
+
   type Relationship {
     id: String!
-    meta: String
+    meta: Meta
     created: String!
     relationshipType: RelationshipType!
     archived: Boolean!

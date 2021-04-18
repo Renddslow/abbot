@@ -1,12 +1,14 @@
 import React from 'react';
 import Spinner from '@atlaskit/spinner';
 import { useQuery, gql } from '@apollo/client';
+import { Route } from 'react-router-dom';
 
 import Subheader from '../../components/Subheader';
 import Section from '../../components/Section';
 import Card from '../../components/Card';
 import PageHeader from '../PageHeader';
 import Grid from '../Grid';
+import Relationship from '../Relationship';
 
 const RELATIONSHIPS = gql`
     query GetRelationships {
@@ -58,6 +60,7 @@ const Relationships = () => {
           </>
         )}
       </Section>
+      <Route path="/relationships/:id" component={Relationship} />
     </>
   );
 };

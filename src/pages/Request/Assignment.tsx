@@ -40,8 +40,6 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment, leader, i
   const [del, { loading: deleteLoading }] = useMutation(DELETE_REQUEST);
   const history = useHistory();
 
-  console.log(data);
-
   const loading = createLoading || updateLoading || deleteLoading;
 
   const updateAssignment = (
@@ -71,6 +69,13 @@ const Assignment = ({ showTray, onClick, relationshipType, assignment, leader, i
             input: {
               id,
             },
+          },
+          update: (cache) => {
+            cache.modify({
+              fields: {
+                requests: (existingRefs, { readField }) => existingRefs.filter((ref: any) => id !== readField('id', ref)),
+              },
+            });
           },
         }));
     }

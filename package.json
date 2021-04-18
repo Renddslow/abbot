@@ -20,8 +20,10 @@
     "apollo-server-lambda": "^2.22.1",
     "catchify": "^2.6.1",
     "cheerio": "^1.0.0-rc.5",
+    "cuid": "^2.1.8",
     "dot-prop": "^6.0.1",
     "ejs": "^3.1.6",
+    "faunadb": "^4.2.0",
     "focus-trap-react": "^8.4.2",
     "form-urlencoded": "^4.4.2",
     "got": "^11.8.2",
@@ -33,6 +35,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "styled-components": "^5.2.1",
+    "tough-cookie": "^4.0.0",
     "typescript": "^4.0.3",
     "web-vitals": "^0.2.4"
   },
