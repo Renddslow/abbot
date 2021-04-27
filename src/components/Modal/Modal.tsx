@@ -11,6 +11,7 @@ type ActionRowParams = {
 
 type Props = {
   children: JSX.Element;
+  forwardedRef?: React.Ref<HTMLDivElement>;
   loading: boolean;
   title: string;
   renderActionRow?: (components: ActionRowParams) => JSX.Element;
@@ -173,7 +174,7 @@ const Modal = (props: Props) => {
     <Overlay>
       <Blur />
       <FocusTrap>
-        <ModalCard aria-labelledby="modal-title">
+        <ModalCard ref={props.forwardedRef} aria-labelledby="modal-title">
           <Header>
             <h1 id="modal-title">{props.title}</h1>
             <Exit onClick={props.onExit} />
@@ -202,6 +203,8 @@ const Modal = (props: Props) => {
       </FocusTrap>
     </Overlay>,
     document.body);
-}
+};
 
-export default Modal;
+const ForwardedModal = React.forwardRef((props: Props, ref?: React.Ref<HTMLDivElement>) => <Modal {...props} forwardedRef={ref} />)
+
+export default ForwardedModal;
