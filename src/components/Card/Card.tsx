@@ -8,6 +8,7 @@ type Props = {
   participant: any;
   to: string;
   relationshipType: 'mentoring' | 'coaching';
+  children?: JSX.Element;
 };
 
 const CardStyled = styled(Link)`
@@ -60,7 +61,7 @@ const Text = styled.p`
   color: black;
 `;
 
-const Card = ({ leader, participant, relationshipType, to }: Props) => {
+const Card = ({ leader, participant, relationshipType, to, children }: Props) => {
   const location = useLocation();
   return (
     <CardStyled to={{
@@ -83,6 +84,7 @@ const Card = ({ leader, participant, relationshipType, to }: Props) => {
       }
       <Text>{participant.firstName} {participant.lastName}</Text>
       <Tag>{relationshipType}</Tag>
+      {children}
     </CardStyled>
   );
 }

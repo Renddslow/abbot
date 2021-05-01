@@ -2,10 +2,14 @@ import Textfield from '@atlaskit/textfield';
 import React, { SyntheticEvent } from 'react';
 import styled from 'styled-components';
 
+import Button from '../components/Button';
+
 type Props = {
+  filter?: string;
   length: number;
   createLabel?: string;
   onCreate?: (e: SyntheticEvent) => void;
+  onFilterChange?: (e: React.FormEvent<HTMLInputElement>) => void;
 };
 
 const Count = styled.p`
@@ -31,18 +35,20 @@ const Header = styled.div`
   justify-content: space-between;
 `;
 
-const PageHeader = ({ length, onCreate, createLabel }: Props) => (
-  <>
-    <Header>
-      <Count>
-        {length} {createLabel}{length > 1 ? 's' : ''}
-      </Count>
-      { !!onCreate && <button onClick={onCreate}>New {createLabel}</button>}
-    </Header>
-    <Search>
-      <Textfield placeholder="Filter" />
-    </Search>
-  </>
-);
+const PageHeader = ({ length, onCreate, createLabel, filter, onFilterChange }: Props) => {
+  return (
+    <>
+      <Header>
+        <Count>
+          {length} {createLabel}{length > 1 ? 's' : ''}
+        </Count>
+        { !!onCreate && <Button background="#0052CC" onClick={onCreate}>New {createLabel}</Button>}
+      </Header>
+      <Search>
+        <Textfield placeholder="Filter" onChange={onFilterChange} value={filter} />
+      </Search>
+    </>
+  );
+}
 
 export default PageHeader;
