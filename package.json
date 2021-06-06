@@ -31,6 +31,7 @@
     "graphql": "^15.5.0",
     "jsonwebtoken": "^8.5.1",
     "object-str-find": "^0.1.1",
+    "pagr": "^0.1.0",
     "qs": "^6.10.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

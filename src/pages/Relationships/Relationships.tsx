@@ -1,67 +1,125 @@
-import React from 'react';
-import Spinner from '@atlaskit/spinner';
-import { useQuery, gql } from '@apollo/client';
-import { Route } from 'react-router-dom';
+import styled from 'styled-components';
 
-import Subheader from '../../components/Subheader';
-import Section from '../../components/Section';
-import Card from '../../components/Card';
-import PageHeader from '../PageHeader';
-import Grid from '../Grid';
-import Relationship from '../Relationship';
+import PageHeader from '../../components/PageHeader';
+import Table, { Header } from '../../components/Table';
+import {gql, useQuery} from '@apollo/client';
 
-const RELATIONSHIPS = gql`
-    query GetRelationships {
+type Response = {
+  id: string;
+  individual: {
+    firstName: string;
+    lastName: string;
+  };
+  created: string;
+  relationshipType: 'mentoring' | 'coaching';
+  assignment?: string;
+}
+
+const Uppercase = styled.span`
+  text-transform: capitalize;
+`;
+
+const headers: Header[] = [
+  {
+    label: 'Name',
+    type: 'person',
+    key: 'name',
+  },
+  {
+    label: 'Created',
+    type: 'date',
+    key: 'created',
+  },
+  {
+    label: 'Type',
+    type: 'label',
+    key: 'relationshipType',
+    component: ({ children }) => (<Uppercase>{children}</Uppercase>),
+  },
+  {
+    label: 'Status',
+    type: 'label',
+    key: 'status',
+    component: () => (<div />),
+  },
+  {
+    label: 'Assignee',
+    type: 'person',
+    key: 'assignee',
+    center: true,
+    component: () => (<div />),
+  },
+];
+
+const query = gql`
+    query Relationships {
         relationships {
             id
             relationshipType
             created
             individual {
-                id
                 firstName
                 lastName
-                avatar
             }
-            leader {
-                id
+        }
+        requests {
+            id
+            relationshipType
+            created
+            assignment
+            individual {
                 firstName
                 lastName
-                avatar
             }
         }
     }
 `;
 
+const f = new Intl.DateTimeFormat('en-UK', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+})
+
+const mergeAndFormat = (data: Record<string, any>) => {
+  const formatter = (type: 'req' | 'rel') => (v: Response) => ({
+    id: v.id,
+    relationshipType: v.relationshipType,
+    created: v.created,
+    name: `${v.individual.firstName} ${v.individual.lastName}`,
+    status: type === 'req' ? v.assignment : 'assigned',
+  });
+  return ([
+    ...data.requests.map(formatter('req')),
+    ...data.relationships.map(formatter('rel')),
+  ]).sort((a, b) => {
+    if (a.created > b.created) return 1;
+    if (a.created < b.created) return -1;
+    return 0;
+  }).map(({ created, ...rest }) => ({
+    ...rest,
+    created: f.format(new Date(created)),
+  }));
+}
+
 const Relationships = () => {
-  const { data, loading } = useQuery(RELATIONSHIPS);
+  const { data, loading } = useQuery(query);
 
   return (
-    <>
-      <Subheader title="Relationships" />
-      <Section>
-        {loading ? (
-          <div>
-            <Spinner size="xlarge" />
-          </div>
-        ) : (
-          <>
-            <PageHeader createLabel="Relationship" length={data.relationships.length} onCreate={() => {}} />
-            <Grid>
-              {data.relationships.map((relationship: Record<string, any>) => (
-                <Card
-                  key={relationship.id}
-                  to={`/relationships/${relationship.id}`}
-                  leader={relationship.leader}
-                  participant={relationship.individual}
-                  relationshipType={relationship.relationshipType}
-                />
-              ))}
-            </Grid>
-          </>
-        )}
-      </Section>
-      <Route path="/relationships/:id" component={Relationship} />
-    </>
+    <section>
+      <PageHeader>Relationships</PageHeader>
+      <h2>My Assignments</h2>
+      { !loading &&
+        <Table
+          title="Open Relationships"
+          hasNew
+          newLabel="+ New Relationship"
+          headers={headers}
+          actionColumn
+          data={mergeAndFormat(data)}
+        />
+      }
+    </section>
   );
 };
 

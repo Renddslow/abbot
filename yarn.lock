@@ -13854,6 +13854,11 @@ package-json@^6.3.0:
     registry-url "^5.0.0"
     semver "^6.2.0"
 
+pagr@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/pagr/-/pagr-0.1.0.tgz#dc7e9b22295de24d1f4baed0c8eab78247584459"
+  integrity sha512-6RI/1Kzho9vOG+kY730LAJU4/Gzo54RDoQ3P7M+GKMj1xlHqitruFj0FAeCWHbI5dR33eWTIL6D0Ssbhmp1Eig==
+
 pako@~1.0.5:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"

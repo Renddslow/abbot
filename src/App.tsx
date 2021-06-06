@@ -1,14 +1,10 @@
-import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink, concat } from '@apollo/client';
+import styled from 'styled-components';
 
-import AuthProvider from './Auth';
-
-import Login from './pages/Login';
-import Relationships from './pages/Relationships';
-
-import Header from './components/Header';
-import Requests from './pages/Requests/Requests';
+import Navigation from './components/Navigation';
+import Relationships from './pages/Relationships/Relationships';
 
 const httpLink = new HttpLink({ uri: '/.netlify/functions/graphql' });
 
@@ -22,8 +18,23 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   });
 
   return forward(operation);
-})
+});
 
+const Grid = styled.div<{ drawerOpen: boolean }>`
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr) ${({ drawerOpen }) => drawerOpen ? `minmax(240px, 30%)` : '0px'};
+  width: 100%;
+  min-height: 100%;
+  transition: 0.2s ease-in;
+`;
+
+const Main = styled.main`
+  width: 100%;
+  min-height: 100%;
+  background: #eff0fb;
+  display: block;
+  padding: 64px 24px 24px 56px;
+`;
 
 const client = new ApolloClient({
   link: concat(authMiddleware, httpLink),
@@ -31,31 +42,28 @@ const client = new ApolloClient({
 });
 
 function App() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const history = useHistory();
+
+  useEffect(() => {
+    const regexpr = /^\/(relationships)\/.*$/;
+    const unlisten = history.listen((location) => {
+      setDrawerOpen(regexpr.test(location.pathname));
+    });
+    return () => unlisten();
+  }, []);
+
   return (
     <ApolloProvider client={client}>
-      <AuthProvider>
-        {(loggedIn) =>
-          loggedIn ? (
-            <div className="App">
-              <Header />
-              <Switch>
-                {
-                  /* TODO:
-                    - Request modals
-                      - Assignment
-                      - Todo items
-                   */
-                }
-                <Route path="/relationships" component={Relationships} />
-                <Route path="/requests" component={Requests} />
-                <Route path="/*" component={() => <Redirect to="/requests" />} />
-              </Switch>
-            </div>
-          ) : (
-            <Login />
-          )
-        }
-      </AuthProvider>
+      <Grid drawerOpen={drawerOpen}>
+        <Navigation />
+        <Main>
+          <Switch>
+            <Route path="/relationships" component={Relationships} />
+          </Switch>
+        </Main>
+        <div />
+      </Grid>
     </ApolloProvider>
   );
 }
