@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import {ReactChild, SyntheticEvent} from 'react';
+import { ReactChild, SyntheticEvent } from 'react';
 
 import Checkbox from '../../components/Checkbox';
-import {withCheckboxes} from './Checkboxes';
+import { withCheckboxes } from './Checkboxes';
 
 type Props = {
   checked: boolean;
@@ -26,7 +26,7 @@ const StyledLink = styled(Link)`
   display: flex;
   text-decoration: none;
   align-items: center;
-  
+
   span {
     font-size: 16px;
     margin-left: 8px;
@@ -37,12 +37,9 @@ const Title = (props: Props) => {
   return (
     <Item>
       <Checkbox label="" labelHidden checked={props.checked} onChange={props.onChange} />
-      <StyledLink to={`/relationships/${props.id}`}>
-        {props.children}
-      </StyledLink>
+      <StyledLink to={`/relationships/${props.id}`}>{props.children}</StyledLink>
     </Item>
   );
 };
 
 export default withCheckboxes<Props>(Title);
-

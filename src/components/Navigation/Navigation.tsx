@@ -8,14 +8,11 @@ const Header = styled.header`
   background: #462d5f;
 `;
 
-const Nav = styled.nav`
-`;
+const Nav = styled.nav``;
 
 const Navigation = () => (
   <Header>
-    <Nav>
-
-    </Nav>
+    <Nav></Nav>
   </Header>
 );
 

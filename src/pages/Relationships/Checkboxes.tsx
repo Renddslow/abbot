@@ -20,7 +20,9 @@ type Props = {
 const CheckboxesContext = createContext<Checkboxes>({} as Checkboxes);
 
 const CheckboxesProvider = (props: Props) => {
-  const [values, setValues] = useState<Record<string, boolean>>(props.ids.reduce((acc, id) => ({ ...acc, [id]: false }), {}));
+  const [values, setValues] = useState<Record<string, boolean>>(
+    props.ids.reduce((acc, id) => ({ ...acc, [id]: false }), {}),
+  );
 
   const update = (id: string, value: boolean) => setValues((t) => ({ ...t, [id]: value }));
 
@@ -45,20 +47,14 @@ export function withCheckboxes<ComponentProps>(
     } & ComponentProps,
   ) => ReactElement,
 ) {
-  return function (props: { id: string, children: ReactChild } & ComponentProps) {
+  return function (props: { id: string; children: ReactChild } & ComponentProps) {
     const { values, update } = useContext(CheckboxesContext);
 
     const handleChange = (v: boolean, e: SyntheticEvent) => {
       update(props.id, v);
     };
 
-    return (
-      <Component
-        checked={values[props.id]}
-        onChange={handleChange}
-        {...props}
-      />
-    );
+    return <Component checked={values[props.id]} onChange={handleChange} {...props} />;
   };
 }
 

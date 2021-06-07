@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import {gql, useQuery} from '@apollo/client';
-import {useLocation} from 'react-router-dom';
+import { gql, useQuery } from '@apollo/client';
+import { useLocation } from 'react-router-dom';
 
 import PageHeader from '../../components/PageHeader';
 import Table, { Header } from '../../components/Table';
@@ -17,7 +17,7 @@ type Response = {
   created: string;
   relationshipType: 'mentoring' | 'coaching';
   assignment?: string;
-}
+};
 
 const Uppercase = styled.span`
   text-transform: capitalize;
@@ -40,7 +40,7 @@ const headers: Header[] = [
     label: 'Type',
     type: 'label',
     key: 'relationshipType',
-    component: ({ children }) => (<Uppercase>{children}</Uppercase>),
+    component: ({ children }) => <Uppercase>{children}</Uppercase>,
   },
   {
     label: 'Status',
@@ -53,39 +53,39 @@ const headers: Header[] = [
     type: 'person',
     key: 'assignee',
     center: true,
-    component: () => (<div />),
+    component: () => <div />,
   },
 ];
 
 const query = gql`
-    query Relationships {
-        relationships {
-            id
-            relationshipType
-            created
-            individual {
-                firstName
-                lastName
-            }
-        }
-        requests {
-            id
-            relationshipType
-            created
-            assignment
-            individual {
-                firstName
-                lastName
-            }
-        }
+  query Relationships {
+    relationships {
+      id
+      relationshipType
+      created
+      individual {
+        firstName
+        lastName
+      }
     }
+    requests {
+      id
+      relationshipType
+      created
+      assignment
+      individual {
+        firstName
+        lastName
+      }
+    }
+  }
 `;
 
 const f = new Intl.DateTimeFormat('en-UK', {
   month: 'short',
   day: 'numeric',
   year: 'numeric',
-})
+});
 
 const mergeAndFormat = (data: Record<string, any>) => {
   const formatter = (type: 'req' | 'rel') => (v: Response) => ({
@@ -95,25 +95,24 @@ const mergeAndFormat = (data: Record<string, any>) => {
     name: `${v.individual.firstName} ${v.individual.lastName}`,
     status: type === 'req' ? v.assignment : 'assigned',
   });
-  return ([
-    ...data.requests.map(formatter('req')),
-    ...data.relationships.map(formatter('rel')),
-  ]).sort((a, b) => {
-    if (a.created > b.created) return 1;
-    if (a.created < b.created) return -1;
-    return 0;
-  }).map(({ created, ...rest }) => ({
-    ...rest,
-    created: f.format(new Date(created)),
-  }));
-}
+  return [...data.requests.map(formatter('req')), ...data.relationships.map(formatter('rel'))]
+    .sort((a, b) => {
+      if (a.created > b.created) return 1;
+      if (a.created < b.created) return -1;
+      return 0;
+    })
+    .map(({ created, ...rest }) => ({
+      ...rest,
+      created: f.format(new Date(created)),
+    }));
+};
 
 const Relationships = () => {
   const { data, loading } = useQuery(query);
   const formattedData = loading ? [] : mergeAndFormat(data);
   const loc = useLocation();
-  const regexpr = /^\/relationships\/(.*)$/
-  const [, active] = (regexpr.exec(loc.pathname) || []);
+  const regexpr = /^\/relationships\/(.*)$/;
+  const [, active] = regexpr.exec(loc.pathname) || [];
 
   return (
     <section>
@@ -121,7 +120,7 @@ const Relationships = () => {
         <>
           <PageHeader>Relationships</PageHeader>
           <h2>My Assignments</h2>
-          { !loading &&
+          {!loading && (
             <Table
               active={active}
               title="Open Relationships"
@@ -131,7 +130,7 @@ const Relationships = () => {
               actionColumn
               data={formattedData}
             />
-          }
+          )}
         </>
       </CheckboxesProvider>
     </section>

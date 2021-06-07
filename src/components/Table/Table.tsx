@@ -1,6 +1,6 @@
-import {ReactChild, ReactElement} from 'react';
+import { ReactChild, ReactElement } from 'react';
 import styled from 'styled-components';
-import {useLocation, useHistory} from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import qs from 'qs';
 
 import Pagination from '../Pagination';
@@ -9,7 +9,7 @@ export type Header = {
   label: string;
   key: string;
   type: 'person' | 'date' | 'label' | 'string';
-  component?: (props: { children: ReactChild, id: string }) => ReactElement;
+  component?: (props: { children: ReactChild; id: string }) => ReactElement;
   filter?: boolean;
   center?: boolean;
 };
@@ -23,12 +23,15 @@ type Props = {
   data: Data[];
   page?: number;
   active?: string;
-} & ({
-  hasNew?: false;
-} | {
-  hasNew: true;
-  newLabel: string;
-});
+} & (
+  | {
+      hasNew?: false;
+    }
+  | {
+      hasNew: true;
+      newLabel: string;
+    }
+);
 
 const TableHeader = styled.div`
   display: grid;
@@ -58,14 +61,14 @@ const TableComponent = styled.table`
 `;
 
 const Column = styled.th<{ center?: boolean }>`
-  text-align: ${({ center }) => center ? 'center' : 'left'};
+  text-align: ${({ center }) => (center ? 'center' : 'left')};
   color: #717277;
   font-weight: 400;
-  padding-left: 12px
+  padding-left: 12px;
 `;
 
 const Item = styled.td<{ center?: boolean }>`
-  text-align: ${({ center }) => center ? 'center' : 'left'};
+  text-align: ${({ center }) => (center ? 'center' : 'left')};
   font-size: 16px;
   color: #5d5e63;
   font-weight: 500;
@@ -73,8 +76,8 @@ const Item = styled.td<{ center?: boolean }>`
 `;
 
 const Row = styled.tr<{ active?: boolean }>`
-  background: ${({ active }) => active ? `#fff` : 'transparent'};
-  
+  background: ${({ active }) => (active ? `#fff` : 'transparent')};
+
   ${Item}:first-child {
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
@@ -98,41 +101,39 @@ const Table = (props: Props) => {
   return (
     <section>
       <TableHeader>
-        {props.title ? <h2>{props.title}</h2> : <div /> }
-        {
-          props.hasNew ?
-            <NewButton>{props.newLabel}</NewButton> :
-            <div />
-        }
+        {props.title ? <h2>{props.title}</h2> : <div />}
+        {props.hasNew ? <NewButton>{props.newLabel}</NewButton> : <div />}
       </TableHeader>
       <TableComponent>
         <thead>
           <tr>
             {props.headers.map((d) => (
-              <Column center={d.center} key={d.label}>{d.label}</Column>
+              <Column center={d.center} key={d.label}>
+                {d.label}
+              </Column>
             ))}
             {props.actionColumn && <ActionColumnHeader />}
           </tr>
         </thead>
         <tbody>
-          {
-            props.data.slice(pageStart, pageEnd).map((d: Data) => (
-              <Row active={props.active === d.id} key={d.id}>
-                {
-                  props.headers.map(({ center, key, component: Component }) => (
-                    <Item center={center} key={`${d.id}--${key}`}>
-                      {Component ? <Component id={d.id}>{d[key]}</Component> : <span>{d[key]}</span>}
-                    </Item>
-                  ))
-                }
-                {props.actionColumn && <td />}
-              </Row>
-            ))
-          }
+          {props.data.slice(pageStart, pageEnd).map((d: Data) => (
+            <Row active={props.active === d.id} key={d.id}>
+              {props.headers.map(({ center, key, component: Component }) => (
+                <Item center={center} key={`${d.id}--${key}`}>
+                  {Component ? <Component id={d.id}>{d[key]}</Component> : <span>{d[key]}</span>}
+                </Item>
+              ))}
+              {props.actionColumn && <td />}
+            </Row>
+          ))}
         </tbody>
       </TableComponent>
       <footer>
-        <Pagination page={page} totalPages={totalPages} onClick={(v: number) => history.push(`?page=${v}`)} />
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onClick={(v: number) => history.push(`?page=${v}`)}
+        />
       </footer>
     </section>
   );

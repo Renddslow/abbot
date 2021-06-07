@@ -6,7 +6,7 @@ type Props = {
 
 const Header = styled.header`
   display: block;
-  
+
   h1 {
     font-size: 32px;
   }

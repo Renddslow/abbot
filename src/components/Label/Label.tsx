@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {ReactChild} from 'react';
+import { ReactChild } from 'react';
 
 const statusColors = {
   pending: '#ffaf19',
@@ -21,9 +21,7 @@ const LabelStyled = styled.span<{ status: keyof typeof statusColors }>`
 `;
 
 const Label = ({ children }: Props) => {
-  return (
-    <LabelStyled status={children as keyof typeof statusColors}>{children}</LabelStyled>
-  );
+  return <LabelStyled status={children as keyof typeof statusColors}>{children}</LabelStyled>;
 };
 
 export default Label;
