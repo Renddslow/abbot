@@ -8,11 +8,11 @@ const template = `
         <div class="person">
             <img src="<%= person.avatar %>" alt="<%= person.firstName %>'s Avatar" />
             <p><strong><%= person.name %></strong></p>
-            <a href="https://relationships.flatland.church/?token=<%= person.token %>">Sign In</a>
+            <a href="https://relationships.flatland.church/token?token=<%= person.token %>">Sign In</a>
         </div>
     <% } %>
 <% } else { %>
-    <a href="https://relationships.flatland.church/?token=<%= permittedTokens[0].token %>">Sign In</a>
+    <a href="https://relationships.flatland.church/token?token=<%= permittedTokens[0].token %>">Sign In</a>
 <% } %>
 
 <p>Thanks so much for all you do.</p>
