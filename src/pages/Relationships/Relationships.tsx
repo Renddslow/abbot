@@ -7,6 +7,7 @@ import Table, { Header } from '../../components/Table';
 import Title from './Title';
 import Label from '../../components/Label';
 import CheckboxesProvider from './Checkboxes';
+import Avatar from '../../components/Avatar';
 
 type Response = {
   id: string;
@@ -17,10 +18,20 @@ type Response = {
   created: string;
   relationshipType: 'mentoring' | 'coaching';
   assignment?: string;
+  leader: {
+    firstName: string;
+    lastName: string;
+    avatar: string;
+  };
 };
 
 const Uppercase = styled.span`
   text-transform: capitalize;
+`;
+
+const Created = styled.span`
+  width: 112px;
+  display: block;
 `;
 
 const headers: Header[] = [
@@ -35,12 +46,13 @@ const headers: Header[] = [
     label: 'Created',
     type: 'date',
     key: 'created',
+    component: Created,
   },
   {
     label: 'Type',
     type: 'label',
     key: 'relationshipType',
-    component: ({ children }) => <Uppercase>{children}</Uppercase>,
+    component: Uppercase,
   },
   {
     label: 'Status',
@@ -53,7 +65,7 @@ const headers: Header[] = [
     type: 'person',
     key: 'assignee',
     center: true,
-    component: () => <div />,
+    component: Avatar,
   },
 ];
 
@@ -67,6 +79,11 @@ const query = gql`
         firstName
         lastName
       }
+      leader {
+        avatar
+        firstName
+        lastName
+      }
     }
     requests {
       id
@@ -74,6 +91,11 @@ const query = gql`
       created
       assignment
       individual {
+        firstName
+        lastName
+      }
+      leader {
+        avatar
         firstName
         lastName
       }
@@ -94,6 +116,7 @@ const mergeAndFormat = (data: Record<string, any>) => {
     created: v.created,
     name: `${v.individual.firstName} ${v.individual.lastName}`,
     status: type === 'req' ? v.assignment : 'assigned',
+    assignee: v.leader,
   });
   return [...data.requests.map(formatter('req')), ...data.relationships.map(formatter('rel'))]
     .sort((a, b) => {
