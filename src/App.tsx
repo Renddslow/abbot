@@ -1,28 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {Route, Switch, useLocation} from 'react-router-dom';
-import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink, concat } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { Route, Switch, useLocation } from 'react-router-dom';
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink } from '@apollo/client';
 import styled from 'styled-components';
 
 import Navigation from './components/Navigation';
 import Relationships from './pages/Relationships';
+import AuthProvider from './Auth';
+import Loading from './pages/Loading';
 
 const httpLink = new HttpLink({ uri: '/.netlify/functions/graphql' });
 
-const authMiddleware = new ApolloLink((operation, forward) => {
-  const store = JSON.parse(window.localStorage.getItem('fc:abbot:user') || '{}');
-  // add the authorization to the headers
-  operation.setContext({
-    headers: {
-      authorization: `Bearer ${store.token}`,
-    }
-  });
-
-  return forward(operation);
-});
-
 const Grid = styled.div<{ drawerOpen: boolean }>`
   display: grid;
-  grid-template-columns: minmax(0, max-content) minmax(0, 1fr) ${({ drawerOpen }) => drawerOpen ? `minmax(240px, 30%)` : '0px'};
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr) ${({ drawerOpen }) =>
+      drawerOpen ? `minmax(240px, 30%)` : '0px'};
   width: 100%;
   min-height: 100%;
   transition: 0.2s ease-in;
@@ -37,8 +28,8 @@ const Main = styled.main`
 `;
 
 const client = new ApolloClient({
-  link: concat(authMiddleware, httpLink),
-  cache: new InMemoryCache()
+  link: httpLink,
+  cache: new InMemoryCache(),
 });
 
 function App() {
@@ -52,15 +43,23 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <Grid drawerOpen={drawerOpen}>
-        <Navigation />
-        <Main>
-          <Switch>
-            <Route path="/relationships" component={Relationships} />
-          </Switch>
-        </Main>
-        <div />
-      </Grid>
+      <AuthProvider>
+        {({ loading, loggedIn }) =>
+          loading ? (
+            <Loading />
+          ) : (
+            <Grid drawerOpen={drawerOpen}>
+              <Navigation />
+              <Main>
+                <Switch>
+                  <Route path="/relationships" component={Relationships} />
+                </Switch>
+              </Main>
+              <div />
+            </Grid>
+          )
+        }
+      </AuthProvider>
     </ApolloProvider>
   );
 }
