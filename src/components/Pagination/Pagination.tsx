@@ -52,6 +52,7 @@ const Chevron = styled.button.attrs({
   align-items: center;
   color: #fc795f;
   cursor: pointer;
+  background: transparent;
   
   &:disabled {
     color: #baa;

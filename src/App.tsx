@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import {Route, Switch, useLocation} from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink, concat } from '@apollo/client';
 import styled from 'styled-components';
 
 import Navigation from './components/Navigation';
-import Relationships from './pages/Relationships/Relationships';
+import Relationships from './pages/Relationships';
 
 const httpLink = new HttpLink({ uri: '/.netlify/functions/graphql' });
 
@@ -30,10 +30,10 @@ const Grid = styled.div<{ drawerOpen: boolean }>`
 
 const Main = styled.main`
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   background: #eff0fb;
   display: block;
-  padding: 64px 24px 24px 56px;
+  padding: 64px 0 24px 56px;
 `;
 
 const client = new ApolloClient({
@@ -43,15 +43,12 @@ const client = new ApolloClient({
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     const regexpr = /^\/(relationships)\/.*$/;
-    const unlisten = history.listen((location) => {
-      setDrawerOpen(regexpr.test(location.pathname));
-    });
-    return () => unlisten();
-  }, []);
+    setDrawerOpen(regexpr.test(location.pathname));
+  }, [location]);
 
   return (
     <ApolloProvider client={client}>

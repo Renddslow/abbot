@@ -9,7 +9,7 @@ export type Header = {
   label: string;
   key: string;
   type: 'person' | 'date' | 'label' | 'string';
-  component?: (props: { children: ReactChild }) => ReactElement;
+  component?: (props: { children: ReactChild, id: string }) => ReactElement;
   filter?: boolean;
   center?: boolean;
 };
@@ -35,6 +35,7 @@ const TableHeader = styled.div`
   justify-content: space-between;
   grid-template-columns: repeat(2, minmax(0, max-content));
   align-items: center;
+  padding-right: 24px;
 `;
 
 const NewButton = styled.button`
@@ -53,6 +54,7 @@ const TableComponent = styled.table`
   margin-top: 24px;
   border-collapse: collapse;
   border-spacing: 0;
+  border-style: none;
 `;
 
 const Column = styled.th<{ center?: boolean }>`
@@ -77,6 +79,10 @@ const Row = styled.tr<{ active?: boolean }>`
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
   }
+`;
+
+const ActionColumnHeader = styled.th`
+  padding-right: 24px;
 `;
 
 const Table = (props: Props) => {
@@ -105,7 +111,7 @@ const Table = (props: Props) => {
             {props.headers.map((d) => (
               <Column center={d.center} key={d.label}>{d.label}</Column>
             ))}
-            {props.actionColumn && <th />}
+            {props.actionColumn && <ActionColumnHeader />}
           </tr>
         </thead>
         <tbody>
@@ -113,12 +119,13 @@ const Table = (props: Props) => {
             props.data.slice(pageStart, pageEnd).map((d: Data) => (
               <Row active={props.active === d.id} key={d.id}>
                 {
-                  props.headers.map(({ center, key, component }) => (
-                    <Item center={center} key={`${d.id}-${key}`}>
-                      {component ? component({ children: d[key] }) : <span>{d[key]}</span>}
+                  props.headers.map(({ center, key, component: Component }) => (
+                    <Item center={center} key={`${d.id}--${key}`}>
+                      {Component ? <Component id={d.id}>{d[key]}</Component> : <span>{d[key]}</span>}
                     </Item>
                   ))
                 }
+                {props.actionColumn && <td />}
               </Row>
             ))
           }

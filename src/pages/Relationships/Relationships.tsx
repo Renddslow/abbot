@@ -1,8 +1,12 @@
 import styled from 'styled-components';
+import {gql, useQuery} from '@apollo/client';
+import {useLocation} from 'react-router-dom';
 
 import PageHeader from '../../components/PageHeader';
 import Table, { Header } from '../../components/Table';
-import {gql, useQuery} from '@apollo/client';
+import Title from './Title';
+import Label from '../../components/Label';
+import CheckboxesProvider from './Checkboxes';
 
 type Response = {
   id: string;
@@ -24,6 +28,8 @@ const headers: Header[] = [
     label: 'Name',
     type: 'person',
     key: 'name',
+    // @ts-ignore
+    component: Title,
   },
   {
     label: 'Created',
@@ -40,7 +46,7 @@ const headers: Header[] = [
     label: 'Status',
     type: 'label',
     key: 'status',
-    component: () => (<div />),
+    component: Label,
   },
   {
     label: 'Assignee',
@@ -104,21 +110,30 @@ const mergeAndFormat = (data: Record<string, any>) => {
 
 const Relationships = () => {
   const { data, loading } = useQuery(query);
+  const formattedData = loading ? [] : mergeAndFormat(data);
+  const loc = useLocation();
+  const regexpr = /^\/relationships\/(.*)$/
+  const [, active] = (regexpr.exec(loc.pathname) || []);
 
   return (
     <section>
-      <PageHeader>Relationships</PageHeader>
-      <h2>My Assignments</h2>
-      { !loading &&
-        <Table
-          title="Open Relationships"
-          hasNew
-          newLabel="+ New Relationship"
-          headers={headers}
-          actionColumn
-          data={mergeAndFormat(data)}
-        />
-      }
+      <CheckboxesProvider ids={formattedData.map(({ id }) => id)}>
+        <>
+          <PageHeader>Relationships</PageHeader>
+          <h2>My Assignments</h2>
+          { !loading &&
+            <Table
+              active={active}
+              title="Open Relationships"
+              hasNew
+              newLabel="+ New Relationship"
+              headers={headers}
+              actionColumn
+              data={formattedData}
+            />
+          }
+        </>
+      </CheckboxesProvider>
     </section>
   );
 };
