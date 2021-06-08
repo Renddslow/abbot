@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import qs from 'qs';
 
 export type User = {
   email: string;
@@ -26,11 +25,9 @@ const AuthProvider = ({ children }: Props) => {
     fetch('/.netlify/functions/me')
       .then((d) => d.json())
       .then((d) => {
-        console.log(d);
+        setUser(d);
       })
-      .catch((e) => {
-        console.log(e);
-      })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

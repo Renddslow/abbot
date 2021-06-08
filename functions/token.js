@@ -13,7 +13,6 @@ exports.handler = async (event) => {
     key: '_fc-abbot-acount',
     value: token,
     maxAge: 60 * 60 * 24 * 14, // 14 days
-    domain: '*.flatland.church',
     httpOnly: true,
     secure: true,
   });
@@ -21,7 +20,7 @@ exports.handler = async (event) => {
   return {
     statusCode: 307,
     headers: {
-      Cookie: cookie.cookieString(),
+      'Set-Cookie': cookie.toString(),
       Location: '/relationships',
     },
   };

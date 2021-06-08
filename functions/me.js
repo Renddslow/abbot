@@ -1,14 +1,14 @@
-const tough = require('tough-cookie');
 const jwt = require('jsonwebtoken');
+const Cookie = require('cookie');
 
 const wait = (ms) => new Promise((res) => setTimeout(res, ms));
 
 exports.handler = async (event) => {
-  const cookie = tough.Cookie.parse(event.headers.Cookie || '');
+  const cookie = Cookie.parse(event.headers.cookie || '');
   // Adding this to prevent flickering on the splash screen
   await wait(1000);
 
-  if (!cookie) {
+  if (!cookie || !cookie['_fc-abbot-acount']) {
     return Promise.resolve({
       statusCode: 401,
       body: JSON.stringify({
@@ -25,7 +25,15 @@ exports.handler = async (event) => {
     });
   }
 
-  return {
-    statusCode: 200,
-  };
+  try {
+    const data = jwt.verify(cookie['_fc-abbot-acount'], process.env.SECRET);
+    return Promise.resolve({
+      statusCode: 200,
+      body: JSON.stringify(data),
+    });
+  } catch (e) {
+    return Promise.resolve({
+      statusCode: 400,
+    });
+  }
 };

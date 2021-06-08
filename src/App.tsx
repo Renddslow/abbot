@@ -7,6 +7,7 @@ import Navigation from './components/Navigation';
 import Relationships from './pages/Relationships';
 import AuthProvider from './Auth';
 import Loading from './pages/Loading';
+import Login from './pages/Login';
 
 const httpLink = new HttpLink({ uri: '/.netlify/functions/graphql' });
 
@@ -47,7 +48,7 @@ function App() {
         {({ loading, loggedIn }) =>
           loading ? (
             <Loading />
-          ) : (
+          ) : loggedIn ? (
             <Grid drawerOpen={drawerOpen}>
               <Navigation />
               <Main>
@@ -57,6 +58,8 @@ function App() {
               </Main>
               <div />
             </Grid>
+          ) : (
+            <Login />
           )
         }
       </AuthProvider>
