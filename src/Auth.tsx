@@ -21,11 +21,15 @@ const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
-  console.log(!!user);
+  console.log(!!user, user);
+
+  const toss = (e: any) => {
+    throw new Error(e);
+  };
 
   useEffect(() => {
     fetch('/.netlify/functions/me')
-      .then((d) => d.json())
+      .then((d) => (d.status > 400 ? toss(d.body) : d.json()))
       .then((d) => {
         setUser(d);
       })
