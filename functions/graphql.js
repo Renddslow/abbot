@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const { ApolloServer, gql } = require('apollo-server-lambda');
 const jwt = require('jsonwebtoken');
+const Cookie = require('cookie');
 
 const getPerson = require('./controller/getPerson');
 const getPeople = require('./controller/getPeople');
@@ -167,12 +168,12 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: async ({ event }) => {
-    const header = event.headers.authorization;
+    const header = event.headers.cookie;
 
     if (!header) return { auth: null };
 
-    const [, token] = header.split(' ');
-    const [err, data] = tryout(() => jwt.verify(token, SECRET));
+    const cookies = Cookie.parse(event.headers.cookie || '');
+    const [err, data] = tryout(() => jwt.verify(cookies['_fc-abbot-acount'], SECRET));
 
     if (err) {
       console.error(err);
