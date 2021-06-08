@@ -13,7 +13,7 @@ exports.handler = async (event) => {
     key: '_fc-abbot-acount',
     value: token,
     maxAge: 60 * 60 * 24 * 14, // 14 days
-    domain: '*.flatland.church',
+    domain: 'flatland.church',
     httpOnly: true,
     secure: true,
   });
