@@ -21,6 +21,8 @@ const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
+  console.log(!!user);
+
   useEffect(() => {
     fetch('/.netlify/functions/me')
       .then((d) => d.json())
